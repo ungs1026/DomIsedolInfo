@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- google font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+  <style>
+    * {font-family: "Jua", sans-serif; font-weight: 400;font-style: normal;} 
+    .member_info_wrapper {width: 100%; display: flex; justify-content: center;}
+    .member_info_contain {max-width: 1200px; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 4rem;}
+
+    /* video */
+    .intro_video {width: 100%; height: 400px; padding: 2rem;}
+
+    /* member-summary-detail */
+    .member-summary-detail {width: 100%; display: flex; justify-content: center; align-items: center; gap: 4rem; }
+    .member-summary-detail .left, .member-summary-detail .right { flex: 1; display: flex; flex-direction: column; gap: 2rem;}
+    .member-summary-detail .left img { width: 100%; object-fit: contain; }
+    .member-summary-detail .right .platform { width: 100%; display: flex; justify-content: space-around;}
+    .member-summary-detail .right .platform:nth-child(1), 
+    .member-summary-detail .right .platform:nth-child(2), 
+    .member-summary-detail .right .platform:nth-child(3),.member-summary-detail .right .platform:nth-child(4) {flex: 1;}
+    .member-summary-detail .right .platform .info {display: flex; justify-content: center; align-items: center;}
+    .member-summary-detail .right .platform .info a {cursor: pointer;}
+    .member-summary-detail .right .platform a img {height: 30px; object-fit: contain; margin-right: 0.2rem;}
+    .member-summary-detail .right .platform .info {font-size: 0.6rem;}
+
+    /* sum_video */
+    .sum_video {display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2rem;}
+    .sum_video video {height: 400px;}
+
+    /* vocal */
+    .vocal {display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2rem;}
+    .vocal .text {display: flex; flex-direction: column; }
+
+    /* activities */
+    .activities {text-align: center;}
+    .activities .year {margin-bottom: 2rem;}
+
+    /* rule */
+    .rule {text-align: center;}
+
+  </style>
+</head>
+<body>
+  <div class="member_info_wrapper">
+    <div class="member_info_contain">
+    
+      <!-- 소개 비디오 -->
+      <div class="intro_video">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Bx68J--HyhI?si=DfKsxJh_F0DDgg8D"
+          title="YouTube video player" frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+
+        <!-- 기본정보 -->
+      <div class="member-summary-detail">
+        <div class="left">
+          <img src="source/profiles/ine/ine_body.png" alt="" style="height: 400px;">
+        </div>
+        <div class="right">
+          <div class="info">
+            <h2>아이네(INE)</h2>
+            <span>출생 : 1994년 (31세)</span><br>
+            <span>거주지 : 수도권 외 시골</span><br>
+            <span>신체 : 158cm｜B형</span><br>
+            <span>성별 : 여성</span><br>
+            <span>가족 : 부모님, 남동생</span><br>
+            <span>반려견 : 뭉뭉이(견종 불명)</span><br>
+            <span>상징색 : 파란제비꽃색 #8A2BE2</span><br>
+            <span>소속사 : 패러블 엔터테인먼트[운영]</span><br>
+            <span>소속 그룹 : 이세계아이돌</span><br>
+            <span>데뷔 : 2021년 이세계아이돌 싱글 1집 RE : WIND <br>
+              <pre>         (데뷔일로부터 +1203일, 3주년)</pre>
+            </span>
+            <span>첫 방송일 : 2021년 7월 26일</span><br>
+            <span>팬덤명 : 둘기</span><br>
+            <span>MBTI : INFP</span><br>
+            <span>별명 : 이네땅, 아잉네, 아굳형 등</span>
+            <img src="source/profiles/ine/ine.svg" alt="" style="width: 140px; background-color: white; border-radius: 10px;" >
+          </div>  
+          <div class="platform">
+            <div class="info">
+              <a href="https://www.youtube.com/@INE" target="_blank">
+                <img src="source/profiles/sns/youtube.svg" alt="">
+              </a>
+              <span>아이네유튜브채널</span>
+            </div>
+            <div class="info">
+              <a href="https://www.youtube.com/@Desuk">
+                <img src="source/profiles/sns/youtube.svg" alt="">
+              </a>
+              <span>데친 숙주나물</span>
+            </div>
+            <div class="info">
+              <a href="https://www.youtube.com/@INE_dasibogi">
+                <img src="source/profiles/sns/youtube.svg" alt="">
+              </a>
+              <span>아이네 유튜브채널</span>
+            </div>
+            <div class="info">
+              <a href="https://ch.sooplive.co.kr/inehine">
+                <img src="source/profiles/sns/soop.png" alt="">
+              </a>
+              <span>방송국</span>     
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="sum_video">
+        <video src="source/profiles/ine/intro.mp4" autoplay loop></video>
+        <div class="greet">
+          <span>흐으으으으음~ 하이네~~!!!!!!!!!!!</span><br>
+          <span>패러블 엔터테인먼트[운영] 소속 6인조 버츄얼 방송인 그룹 이세계아이돌의 멤버. 동시에 SOOP 스트리머이며, 버츄얼 유튜버이다.</span>
+        </div>
+      </div>
+
+      <div class="vocal">
+        <div class="ex">
+          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/aaqIHn61OVE?si=okZUUJlywxhL1Ah3" 
+          title="YouTube video player" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <div class="text">
+          <span>- 오디션 때부터 팬들은 물론이고, 합격 후 이세돌 멤버들도 입을 모아 릴파와 함께 메인보컬로 꼽을 정도로 노래 실력이 뛰어나다. 그룹 내에서 공식 포지션은 정해지지 않았지만 보통 노래 후렴구와 같은 하이라이트 파트와 화음, 코러스를 담당하는 등 비공식적으로도 그 역할을 하는 편.</span><br>
+          <span>- 허스키한 톤에 풍부한 성량과 넓은 음역대를 지니고 있으며, 특히 감정을 연기하는 데 있어 특출난 기교를 갖춘 훌륭한 보컬의 소유자이다. 소화할 수 있는 장르의 영역도 그만큼 넓다</span><br>
+          <span>- 아이네의 보컬로서의 큰 강점은 명료한 딕션과 뛰어난 완급조절 및 끝음처리를 통해 노래가 의도하는 감정을 그대로 담아 전달하는 표현력이다. 음 하나하나와 호흡까지도 섬세하게 계산된 의도를 담아 부르는 그녀의 노래는 청자에게 기교와 스킬의 차원을 뛰어넘은 매력으로 다가오며, 이는 아이네의 보컬이 많은 사람들에게 사랑을 받는 이유이기도 하다. 여기에 더해 마치 성대를 갈아끼워 넣는 것마냥 노래의 분위기에 따라 전혀 다른 창법과 음색으로 다양한 스타일의 장르들을 능숙하게 소화해 낸다.</span><br>
+          <span>- 음악을 사랑하는 부모님의 희망으로 어렸을 때부터 다양한 콩쿠르에 참여하면서 성악가를 장래 희망으로 삼았으며, 자신의 실력에 한계를 느껴 고등학생 때 즈음 꿈을 접었지만 이후 다시금 노래를 제대로 해보고 싶다는 희망이 생겨 실용음악을 공부했다고 한다.</span><br>
+        </div>
+      </div>
+
+      <div class="activities">
+        <div class="year">
+          <h2>2021년</h2>
+          <span>9월 9일 : 제 1회 <a href="https://namu.wiki/w/%EA%B5%AC%EA%B5%AC%EC%9D%98%20%EB%82%A0" target="_blank">구구의 날</a></span>
+        </div>
+        <div class="year">
+          <h2>2022년</h2>
+          <span>4월 2일 : <a href="https://www.youtube.com/watch?v=OUT33SIFEK0" target="_blank">없는 계절</a> 발매</span><br>
+          <span>10월 9일 : <a href="https://www.youtube.com/watch?v=lttoODN5hOo" target="_blank">햄이네 락페스티벌</a></span>
+        </div>
+        <div class="year">
+          <h2>2023년</h2>
+          <span>9월 9일 <a href="https://namu.wiki/w/%EA%B5%AC%EA%B5%AC%EC%9D%98%20%EB%82%A0" target="_blank">제 2회 구구의 날</a></span>
+        </div>
+        <div class="year">
+          <h2>2024년</h2>
+          <span>2월 10일 : <a href="아이네 아프리카TV 데뷔 콘서트" target="_blank">아이네 아프리카TV 데뷔 콘서트</a></span><br>
+          <span>5월 11일 <a href="https://www.youtube.com/live/aCa5qn11IrI" target="_blank">EVER PURPLE</a>콘서트</span><br>
+          <span>9월 9일 : <a href="https://www.youtube.com/watch?v=jv_OeXLXCHs" target="_blank">제 3회 구구의 날</a></span>
+        </div>
+      </div>
+
+      <div class="subimg">
+        <img src="source/profiles/ine/ine_sub.png" alt="" style = "width: 100%;">
+      </div>
+
+      <div class="rule">
+        <h2>방송규칙</h2>
+        <span>(예외도 있긴하지만) 방장이 언급전에 </span><br>
+        <span> > 타스트리머 언급/방송주제와 상관없는 채팅/훈수/중계/비교/평가/시청자수언급/친목/네임드/도배/물타기/뇌절/개인정보 추측 외에도 방장 주관적인 상황에 따른 알잘딱 못하는 선넘는 행동 < </span><br>
+        <span>위와 같은 행동을 했을시 즉시 밴 혹은 채팅금지 / 경고 혹은 채팅금지를 3번 받을시 밴</span>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TextArea 개행 처리 테스트</title>
+  <style>
+    .output-area {
+      border: 1px solid #ccc;
+      padding: 10px;
+      white-space: pre-wrap; /* CSS로 개행 처리 */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>TextArea 개행 처리 테스트</h1>
+
+  <textarea id="myTextarea" rows="5" cols="50">
+첫 번째 줄입니다.
+두 번째 줄은 띄워서 작성했습니다.
+
+세 번째 줄입니다.
+  </textarea>
+  <br>
+  <button id="submitButton">저장 (콘솔 출력)</button>
+
+  <h2>출력 결과 (CSS white-space: pre-wrap)</h2>
+  <div id="outputCss" class="output-area"></div>
+
+  <h2>출력 결과 (JavaScript &lt;br&gt; 태그 변환)</h2>
+  <div id="outputBr" class="output-area"></div>
+
+  <script>
+    const textarea = document.getElementById('myTextarea');
+    const submitButton = document.getElementById('submitButton');
+    const outputCssDiv = document.getElementById('outputCss');
+    const outputBrDiv = document.getElementById('outputBr');
+
+    submitButton.addEventListener('click', () => {
+      const textWithNewlines = textarea.value;
+      const textWithBr = textWithNewlines.replace(/\n/g, '<br>');
+
+      console.log('원본 내용 (개행 문자):', textWithNewlines);
+      console.log('변환된 내용 (<br> 태그):', textWithBr);
+
+      // CSS white-space: pre-wrap을 사용하여 개행 유지하여 출력
+      outputCssDiv.textContent = textWithNewlines;
+
+      // JavaScript로 <br> 태그로 변환하여 출력 (innerHTML 사용)
+      outputBrDiv.innerHTML = textWithBr;
+    });
+  </script>
+
+</body>
+</html>

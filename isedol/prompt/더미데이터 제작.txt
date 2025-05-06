@@ -1,0 +1,22 @@
+create table boards(
+  idx int not null primary key,
+  boardKind varchar(50) default '',
+  title varchar(200) default '',
+  writer varchar(50) default '',
+  wdate date,
+  content varchar(500) default ''
+);
+
+boards 테이블은 게시판 테이블이다.
+
+idx는 1부터 50까지 boardkind는 (free, notice, news, suggest) 중 하나로 각 12개씩은 존재해야 한다. title은 제목, writer는 작성자, wdate는 작성한 날짜, content는 내용이다. 다음 기준에 맞춰서 랜덤하게 50개의 더미데이터를 만들어 insert문으로 작성해라.
+
+1. 데이터는 총 50개이다.
+2. idx 는 1 - 50이며 중첩되지 않고 이것만 순차적으로 증가시킨다.
+3. boardkind는 위 정의한 4가지 중 한개여야하며 각 12개씩 있어야 한다.
+4. title은 의미가 있는 문장으로 랜덤하게 작성한다.
+5. writer는 의미가 있는 한 단어로 랜덤하게 작성한다.
+6. wdate는 2015년 1월 1일부터 2025년 3월 1일 까지 랜덤한 날짜이다.
+7. content는 의미가있는 문장 2개를 연결하여 랜덤하게 작성한다.
+
+위 요구사항에 충족하여 50개의 더미데이터를 생성해 sql의 insert문으로 출력한다.

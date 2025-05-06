@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>이세돌 돔 공연 축하해</title>
+    <link rel="icon" type="image/x-icon" href="source/favicon.ico">
+    <meta name="description" content="This page is to celebrate ISEGYE IDOL's dome performance on May 17, 2025." />
+    <meta name="keywords" content="ISEGYE IDOL, Dome Performance, Virtual, 3D, ISEDOL, ISEGYE IDOL Information" />
+    
+    <!-- 공유카드 -->
+    <meta property="og:title" content="ISEDOL SUKI">
+    <meta property="og:description" content="이세계 아이돌 팬 페이지입니다.">
+    <meta property="og:image" content="source/mp3/1ISEDOL/beyond_the_way.jpg">
+    <meta property="og:type" content="website"> 
+    <meta property="og:site_name" content="이세돌 팬 사이트">
+    <meta property="og:locale" content="ko_KR"> 
+
+    <!-- 공유카드-트위터 -->
+    <meta name="twitter:card" content="summary_large_image"> 
+    <meta name="twitter:title" content="이세계 아이돌 팬 사이트"> 
+    <meta name="twitter:description" content="이세계아이돌 고척돔 공연 축하의 의미로 만든 팬 사이트입니다."> 
+    <meta name="twitter:image" content="source/mp3/1ISEDOL/beyond_the_way.jpg"> 
+
+    <!-- Swiper CSS CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Swiper JS CDN -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- css -->
+    <link rel="stylesheet" href="./style.css">
+    <!-- JS -->
+    <script defer src="./script.js"></script>
+
+  </head>
+  <body ondragstart="return false" ondrop="return false" onselectstart="return false">
+    
+    <div id="app" class="container">
+      <!-- 상단 영역 -->
+      <header>
+        <div class="left">
+          <div class="logo">
+            <a href="#" @click="switchPage('page-main')">
+              <img src="source/logo.svg" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="center">
+          <nav class="nav">
+            <a href="#" @click="switchPage('page-main')">MAIN</a>
+            <a href="#" @click="switchPage('page-member')">MEMBER</a>
+            <a href="#" @click="switchPage('page-board')">BOARD</a>
+            <a href="#" @click="switchPage('page-playlist')">PLAYLIST</a>
+          </nav>
+        </div>
+        <div class="right">
+          <div class="profile">
+            <img class="profile-card" src="source/profile.png" alt="profile" />
+            <p>
+              <span class="guest-name">똥강아지</span>
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <!-- SPA 콘텐츠 영역 -->
+      <div class="main-content">
+        <!-- 로딩 페이지 -->
+        <section v-if="currentPage === 'page-loading'" id="page-loading" alt="First Loading Page">
+          <div class="loading-bg">
+            <iframe class="loading-video" 
+            src="https://www.youtube.com/embed/qt3JUf7s61E?autoplay=1&mute=1&loop=1&playlist=qt3JUf7s61E&start=3" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media"
+            allowfullscreen></iframe>
+          </div>
+          <div class="loading-logo">
+            <img
+              src="source/logo.svg"
+              alt="Main Page Logo"
+              style="filter: invert(100%)"
+            />
+          </div>
+          <div class="loading-progress">
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                :style="{ width: loadingPercent + '%' }"
+              ></div>
+            </div>
+            <div class="progress-percent">{{ loadingPercent }}%</div>
+          </div>
+        </section>
+
+        <!-- MAIN 페이지 -->
+        <section v-if="currentPage === 'page-main'" id="page-main" alt="Main Page">
+          <section id="banner">
+            <div class="swiper-container main_banner" alt="main banner for advertisement">
+              <div class="swiper-wrapper">
+                <div
+                  class="swiper-slide"
+                  v-for="(slider, index) in sliders"
+                  :key="index"
+                >
+                  <img :src="slider.img" alt="배너 사진 없음" />
+                </div>
+              </div>
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </section>
+          <section id="member">
+            <div id="main-member">
+              <div class="member-icons"id="member-icons" :class="{ fold: showDetail }">
+                <div
+                  class="member-icon"
+                  v-for="member in members"
+                  :key="member.index"
+                  :data-index="member.index"
+                  :data-img1="member.img1"
+                  :data-img2="member.img2"
+                  :data-img3="member.img3"
+                  :data-info="member.info"
+                  @click="showMemberDetail(member.index)"
+                >
+                  <img
+                    :src="'source/profiles/' + member.index + '.png'"
+                    alt="Member Icon"
+                  />
+                </div>
+              </div>
+              <div class="member-detail" id="member-detail" :class="{ active: showDetail }" >
+                <button class="detail-close" @click="hideMemberDetail">
+                  X
+                </button>
+                <div class="member-detail-content">
+                  <div class="detail-left">
+                    <img
+                      v-for="img in memberImages"
+                      :key="img"
+                      :src="img"
+                      class="detail-photo"
+                      alt="Member Image"
+                    />
+                  </div>
+                  <div class="detail-right" v-html="memberInfo"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="latest_song">
+            <div class="latest-song-wrapper">
+              <div
+                class="album-art-container"
+                @mouseenter="showSongTitles"
+                @mouseleave="hideSongTitles"
+              >
+                <img class="card card1" src="source/syzygy.jpg" alt="Latest Song Cover"/>
+                <div class="card card2">
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/v9Jqz13gg8k?si=UGJvJwg1iWEMl-tT"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+              <div class="song-icons" id="song-icons" :class="{ vertical: isSongTitlesVisible }">
+                <div class="icon-item" v-for="(song, index) in songs" :key="index">
+                  <!-- 아이콘 이미지를 출력 -->
+                  <img class="icon" :src="song.img" alt="Song Icon" style="object-fit: contain;" />
+                  <!-- 모든 노래의 제목을 출력하며, 마지막(4번째) 항목은 긴 제목의 경우 truncation(ellipsis) 처리 -->
+                  <p>
+                    <span
+                      v-show="isSongTitlesVisible"
+                      :class="'truncate'"
+                      v-html="song.title"
+                    ></span>
+                  </p>
+                </div>
+              </div>
+              
+            </div>
+          </section>
+          <!-- VIDEO 섹션: Vue 환경에 맞게 initVideo가 nextTick 후 호출되어 등록됨 -->
+          <section id="video">
+            <div class="container">
+              <div class="video-container" id="video-container">
+                <p><span>매일 20:00에 갱신됩니다.</span></p>
+                <div
+                  class="video-card"
+                  v-for="(card, index) in videoCards"
+                  :key="index"
+                  :class="{ animate: card.animate, 'float-animation': card.float, active: card.active, hidden: card.hidden }"
+                  @click="onVideoCardClick(index)"
+                >
+                  <!-- 클릭 전: 기본 프로필 이미지 출력 -->
+                  <template v-if="!card.showVideo">
+                    <img
+                      :src="card.defaultImg"
+                      alt="Member Icon"
+                    />
+                  </template>
+
+                  <!-- 클릭 후: 영상 출력 (iframe) -->
+                  <template v-else>
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      :src="card.youtubeUrl[card.index]"
+                      title="YouTube video player"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen
+                    >
+                    </iframe>
+                  </template>
+                </div>
+                <button
+                  class="close-btn"
+                  id="video-close-btn"
+                  @click="onCloseVideoCard"
+                  :class="{ show: activeVideoCard !== null }"
+                >
+                  X
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section id="award">
+            <div class="container">
+              <!-- ltr 방향 슬라이드 (다른 슬라이드도 동일하게 적용) -->
+              <div class="reward-row" data-direction="ltr">
+                <div class="reward-slider">
+                  <!-- 수정된 reward-card 구조: awardCards 배열을 v-for로 출력 -->
+                  <div class="reward-card" v-for="(card, index) in awardCards" :key="index">
+                    <div class="card-icon">
+                      <img :src="card.icon" alt="Left Award Icon" />
+                    </div>
+                    <div class="card-info">
+                      {{ card.info }}
+                    </div>
+                  </div>
+                </div>
+                <div class="fade fade-left"></div>
+                <div class="fade fade-right"></div>
+              </div>
+              <!-- rtl 방향 슬라이드 (동일 구조 적용) -->
+              <div class="reward-row" data-direction="rtl">
+                <div class="reward-slider">
+                  <div class="reward-card" v-for="(card, index) in awardCards" :key="index">
+                    <div class="card-icon">
+                      <img :src="card.icon" alt="Right Award Icon" />
+                    </div>
+                    <div class="card-info">
+                      {{ card.info }}
+                    </div>
+                  </div>
+                </div>
+                <div class="fade fade-left"></div>
+                <div class="fade fade-right"></div>
+              </div>
+            </div>
+          </section>          
+
+          <footer>
+            <div class="footer-container">
+              <div class="footer-left" :class="{ animate: isFooterVisible }">
+                <div class="image-group">
+                  <img
+                    class="shape-rect"
+                    src="source/lp_plyaer-removebg-preview.png"
+                    alt="main footer img"
+                  />
+                  <img class="shape-circle" src="source/disk.png" alt="disk" />
+                  <img
+                    class="shape-triangle"
+                    src="source/chim.png"
+                    alt="sub footer img"
+                  />
+                </div>
+              </div>
+              <div class="footer-right">
+                <p>Email:
+                  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46223e272b362a23062b272f2a6825292b">
+                    wodnd565@gmail.com
+                  </a>
+                </p>
+                <p><a href="https://github.com/ungs1026">GitHub</a></p>
+                <p>Address: 서울시 구로구</p>
+                <p>&copy; 2025 All Rights Reserved</p>
+              </div>
+            </div>
+          </footer>
+        </section>
+
+        <!-- MEMBER 페이지 -->
+        <section v-if="currentPage === 'page-member'" id="page-member" alt="Member Page">
+          <div id="member-slider" class="member-slider" ref="slider" @mouseenter="pause" @mouseleave="resume">
+            <div class="slider-track">
+              <div class="member-slider-card" v-for="(album, index) in albums" :key="album.idx" ref="card" @click="toggleMemberSliderCard(index)">
+                <a v-if="album.url" :href="album.url" target="_blank">
+                  <img :src="album.img" alt="Album Image" />
+                </a>
+              </div>
+            </div>
+            <div class="member-slider-fade member-slider-fade-left"></div>
+            <div class="member-slider-fade member-slider-fade-right"></div>
+          </div>
+
+          <div id="member-info">
+            <div class="member-icons-row">
+              <div
+                class="mem-icon"
+                v-for="(icon, index) in memberIcons"
+                :key="index"
+                @click="showMemberInfo(index)"
+              >
+                <div
+                  class="icon-default"
+                  :style="{ backgroundImage: `url(${icon.defaultImg})` }"
+                ></div>
+                <div
+                  class="icon-hover"
+                  :style="{ backgroundImage: `url(${icon.hoverImg})` }"
+                ></div>
+              </div>
+            </div>
+            <div class="member-info-display">
+              <!-- 기존 한 줄 텍스트 대신 div(info-section)를 사용해 HTML 포맷의 상세 정보를 작성할 수 있음 -->
+              <div class="member-info-content" v-for="(info, index) in memberInfos" :key="index" v-show="activeMemberInfo === index">
+                <div class="info-section" v-html="info"></div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- BOARD 페이지 -->
+        <section v-if="currentPage === 'page-board'" id="page-board" alt="Board Page">
+          <div class="board-grid">
+            <div
+              class="board-box"
+              v-for="board in boards"
+              :key="board.type"
+              :data-board="board.type"
+            >
+              <div class="board-header">
+                <p>
+                  <span class="board-title">{{ board.title }}</span>
+                </p>
+                <button class="board-add" @click="showFullBoard(board.type)">
+                  +
+                </button>
+              </div>
+              <div class="board-list">
+                <div
+                  class="board-post"
+                  v-for="(post, pIndex) in board.posts"
+                  :key="pIndex"
+                  @click="showPostModal(post)"
+                >
+                  <div class="post-index">{{ pIndex + 1 }}</div>
+                  <div class="post-title" style="white-space: nowrap; ">{{ post.title }}</div>
+                </div>
+              </div>
+              <div class="board-footer">
+                <button class="board-more" @click="showFullBoard(board.type)">
+                  더보기
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Full Board Pages -->
+        <section
+          v-if="currentPage === 'page-board-full-news'"
+          id="page-board-full-news"
+          alt="News All Page"
+        >
+        <h1 style="display: none;">News Board Full Page</h1>
+          <div class="full-header">
+            <h2>NEWS 전체</h2>
+            <button class="full-board-back" @click="switchPage('page-board')">
+              뒤로가기
+            </button>
+          </div>
+          <div class="full-list">
+            <div
+              class="full-post"
+              v-for="(post, index) in paginatedFullPosts.news"
+              :key="index"
+              @click="showPostModal(post)"
+            >
+              <div class="post-index">{{ index + 1 }}</div>
+              <div class="post-title">{{post.title}}</div>
+              <div class="post-writer">{{ post.writer }}</div>
+            </div>
+          </div>
+          <div class="pagination">
+            <button
+              v-for="page in totalPages.news"
+              :key="page"
+              @click="changePage('news', page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </section>
+        <section
+          v-if="currentPage === 'page-board-full-notice'"
+          id="page-board-full-notice"
+          alt="Notice All Page"
+        >
+          <h1 style="display: none;">Notice Board Full Page</h1>
+          <div class="full-header">
+            <h2>공지사항 전체</h2>
+            <button class="full-board-back" @click="switchPage('page-board')">
+              뒤로가기
+            </button>
+          </div>
+          <div class="full-list">
+            <div
+              class="full-post"
+              v-for="(post, index) in paginatedFullPosts.notice"
+              :key="index"
+              @click="showPostModal(post)"
+            >
+              <div class="post-index">{{ index + 1 }}</div>
+              <div class="post-title">{{post.title}}</div>
+              <div class="post-writer">{{ post.writer }}</div>
+            </div>
+          </div>
+          <div class="pagination">
+            <button
+              v-for="page in totalPages.notice"
+              :key="page"
+              @click="changePage('notice', page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </section>
+        <section
+          v-if="currentPage === 'page-board-full-free'"
+          id="page-board-full-free"
+          alt="Free All Page"
+        >
+          <h1 style="display: none;">Free Board Full Page</h1>
+          <div class="full-header">
+            <h2>자유게시판 전체</h2>
+            <button class="full-board-back" @click="switchPage('page-board')">
+              뒤로가기
+            </button>
+          </div>
+          <div class="full-list">
+            <div
+              class="full-post"
+              v-for="(post, index) in paginatedFullPosts.free"
+              :key="index"
+              @click="showPostModal(post)"
+            >
+              <div class="post-index">{{ index + 1 }}</div>
+              <div class="post-title">{{post.title}}</div>
+              <div class="post-writer">{{ post.writer }}</div>
+            </div>
+          </div>
+          <div class="pagination">
+            <button
+              v-for="page in totalPages.free"
+              :key="page"
+              @click="changePage('free', page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </section> 
+        <section
+          v-if="currentPage === 'page-board-full-suggest'"
+          id="page-board-full-suggest"
+          alt="Suggest All Page"
+        >
+        <h1 style="display: none;">Suggest Board Full Page</h1>
+          <div class="full-header">
+            <h2>건의사항 전체</h2>
+            <button class="full-board-back" @click="switchPage('page-board')">
+              뒤로가기
+            </button>
+          </div>
+          <div class="full-list">
+            <div
+              class="full-post"
+              v-for="(post, index) in paginatedFullPosts.suggest"
+              :key="index"
+              @click="showPostModal(post)"
+            >
+              <div class="post-index">{{ index + 1 }}</div>
+              <div class="post-title">{{post.title}}</div>
+              <div class="post-writer">{{ post.writer }}</div>
+            </div>
+          </div>
+          <div class="pagination">
+            <button
+              v-for="page in totalPages.suggest"
+              :key="page"
+              @click="changePage('suggest', page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </section>
+
+        <!-- PLAYLIST 페이지 -->
+        <section v-if="currentPage === 'page-playlist'" id="page-playlist" alt="Playlist Page">
+          <!-- Top10 슬라이더: JS 제어용 ref, 클릭 시 playTopSong 호출 -->
+          <p><span style="font-size: 20px;">TOP 10</span></p>
+          <div class="top-playlist-slider" ref="topSlider" @mouseenter="pauseTopSlider" @mouseleave="resumeTopSlider" alt="Top Playlist Slider">
+            <div class="playlist-slider-track">
+              <div
+                class="playlist-slider-card"
+                v-for="(song, i) in topSongs"
+                :key="song.idx"
+                ref="topCards"
+                @click="playTopSong(song)"
+              >
+                <p><span>{{ i + 1 }}위</span></p>
+                <img :src="song.thumbnail" alt="Top Song Thumbnail" />
+                <p><span>
+                  {{ song.title }} - {{ song.artist ? song.artist.name : '' }}
+                </span></p>
+              </div>
+              <!-- 무한 루프 복제 -->
+              <div
+                class="playlist-slider-card"
+                v-for="(song, i) in topSongs"
+                :key="'dup'+song.idx"
+                ref="topCards"
+                @click="playTopSong(song)"
+              >
+                <p><span>{{ i + 1 }}위</span></p>
+                <img :src="song.thumbnail" alt="Top Song Thumbnail" />
+                <p><span>
+                  {{ song.title }} - {{ song.artist ? song.artist.name : '' }}
+                </span></p>
+              </div>
+            </div>
+          </div>
+  
+          <h1 style="display: none;">PlayList Page</h1>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2>플레이리스트</h2>
+            <button class="playlist-refresh-btn" @click="refreshPlaylists">🔄 새로고침</button>
+          </div>
+          <div class="playlist-grid">
+            <div class="playlist-item" v-for="(pl, index) in playlists" :key="pl.idx" @click="viewPlaylistAll(pl)">
+              <div class="playlist-thumb">
+                <img :src="pl.thumbnail" alt="Playlist Thumbnail" />
+              </div>
+              <div class="playlist-name">{{ pl.name }}</div>
+            </div>
+            <div class="playlist-item add" @click="openPlaylistAddModal">+</div>
+          </div>
+        </section>
+
+        <section v-if="currentPage === 'page-playlist-all'" id="page-playlist-all" alt="Playlist All Page">
+          <div class="playlist-all-banner" style="position: relative;">
+            <img
+              :src="selectedPlaylistSongs.length > 0 ? selectedPlaylistSongs[0].thumbnail : ''"
+              alt="Playlist Banner"
+            />
+            <button
+              class="playlist-refresh-btn"
+              @click="refreshPlaylistAll"
+              style="position:absolute; bottom:10px; right:10px;"
+            >🔄 새로고침</button>
+          </div>
+          <div class="playlist-all-header">
+            <h1 style="display: none;">playlists title</h1>
+            <h2>
+              <!-- 만약 playlists 배열에 저장된 해당 idx의 이름을 출력하고 싶다면 -->
+              {{ playlists.find(pl => pl.idx === selectedPlaylistIdx)?.name || '플레이리스트' }}
+            </h2>
+            <div class="playlist-all-header-buttons">
+              <button class="playlist-play-btn" @click="playSongFromPlaylist(selectedPlaylistIdx )">▶Play</button>
+              <button class="playlist-edit-btn" @click="openPlaylistEditModal">
+                Edit
+              </button>
+              <button class="playlist-list-btn" @click="switchPage('page-playlist')">
+                리스트
+              </button>
+            </div>
+          </div>
+          <!-- 노래 목록 출력 부분 -->
+          <div class="playlist-all-body">
+            <div
+              class="song-item"
+              v-for="(song, index) in selectedPlaylistSongs"
+              :key="song.idx"
+              @click="showSongInfoModal(index)"
+            >
+            <p>
+              <span class="song-title">{{ song.title }}</span> -
+              <span class="song-artist">{{ song.artist ? song.artist.name : '' }}</span>
+            </p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Modal -->
+      <div class="baord-modal" :class="{ active: isModalActive }" alt="Board Modal">
+        <div class="baord-modal-content">
+          <button class="baord-modal-close" @click="closeModal">&times;</button>
+          <div class="baord-modal-title">{{ modalTitle }}</div>
+          <div class="baord-modal_img_cover">
+            <img class="modal-Img" :src="modalImage" alt="게시판 이미지 없음">
+          </div>
+          <div class="baord-modal-meta">{{ modalMeta }}</div>
+          <div class="baord-modal-body" v-html="modalBody"></div>
+
+          <!-- 댓글 입력 -->
+          <label for="comment-input" class="board-modal-comment-label">
+            <input
+              id="comment-input"
+              type="text"
+              v-model="commentText"
+              class="board-modal-comment"
+              placeholder="댓글을 입력하세요"
+            />
+            <button class="comment-submit-btn" @click="postComment">등록</button>
+          </label>
+
+          <!-- 댓글 리스트 (최대 5개, 최신순) -->
+          <ul class="board-comment-list">
+            <li v-for="c in boardCommentsList" :key="c.idx">
+              {{ c.comment }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 플레이리스트 추가 모달 (playlist 페이지에서 플러스 버튼 클릭 시) -->
+      <div class="playlist-modal" v-if="isPlaylistAddModalActive" alt="Add Playlist Modal">
+        <h1 style="display: none;">Playlist Add Modal</h1>
+        <div class="playlist-modal-content">
+          <button class="modal-close" @click="closePlaylistAddModal">×</button>
+          <h2>새 플레이리스트 추가</h2>
+          <input type="text" placeholder="플레이리스트 이름" v-model="newPlaylistName" id="newPLName"/>
+          <input type="file" @change="handleThumbnailChange" />
+          <button @click="addNewPlaylist">save</button>
+        </div>
+      </div>
+
+      <!-- 플레이리스트 수정 모달 (playlistAll 페이지 상단 수정 버튼 클릭 시) -->
+      <div class="playlist-modal" v-if="isPlaylistEditModalActive" alt="Edit Playlist Modal">
+        <h1 style="display: none;">Playlist Edit Modal</h1>
+        <div class="playlist-modal-content">
+          <button class="modal-close" @click="closePlaylistEditModal">×</button>
+          <!-- 상단에 해당 플레이리스트 이름 출력 -->
+          <h2>{{ playlists.find(pl => pl.idx === selectedPlaylistIdx)?.name || '플레이리스트' }}</h2>
+          <!-- songs 배열의 목록을 체크박스 포함하여 출력 -->
+          <div class="song-list" style="height: 30vh; overflow-y: auto;">
+            <div class="song-item" v-for="song in allSongs" :key="song.idx" style="display: flex; align-items: center; margin-bottom: 10px;">
+              <label :for="'song-' + song.idx" style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                <input
+                  type="checkbox"
+                  :id="'song-' + song.idx"
+                  :value="song.idx"
+                  v-model="currentPlaylistPlayList"
+                />
+                <img :src="`${song.thumbnail}`" alt="Thumbnail" style="height: 40px; margin: 0 10px;">
+                <p>
+                  <span v-html="song.title"></span>
+                </p>
+              </label>
+            </div>
+          </div>
+          <!-- 수정 내용을 저장하는 save 버튼 -->
+          <button @click="savePlaylistChanges">save</button>
+        </div>
+      </div>
+
+      <!-- Song Info Modal -->
+      <div class="song-info-modal" v-if="isSongInfoModalActive" @click.self="closeSongInfoModal">
+        <h1 style="display: none;">Song Info Modal</h1>
+        <div class="song-info-modal-content">
+          <button class="modal-close" @click="closeSongInfoModal">×</button>
+          <div class="song-info-modal-body">
+            <!-- 왼쪽: 곡 정보 -->
+            <div class="modal-song-left">
+              <img :src="modalSong.thumbnail" alt="썸네일" />
+              <div class="modal-song-info">
+                <h2>{{ modalSong.title }}</h2>
+                <p>발매일: {{ modalSong.odate }}</p>
+                <p>아티스트: {{ modalSong.artist.name }}</p>
+              </div>
+            </div>
+            <!-- 오른쪽: 재생·평점·다른 노래 목록 -->
+            <div class="modal-right">
+              <!-- 상단: 재생·평점·참여자 -->
+              <div class="play-rating">
+                <button class="btn_play" @click="playModalSong()">▶</button>
+                <p style="text-align: center; font-size: max(1vw, 17px);">
+                  <span>평점: {{ modalSong.score }} / 참여자: {{ modalSong.part }}</span>
+                </p>
+              </div>
+              <!-- 평가 섹션 -->
+              <div class="vote-section">
+                <button class="vote_btn" v-for="n in 5" :key="n" :class="{ active: selectedScore === n }" @click="toggleScore(n)">{{ n }}</button>
+                <button id="vote_btn_submit" @click="saveVote">Vote</button>
+              </div>
+              <!-- 다른 노래 목록 -->
+              <div class="other-songs-list">
+                <div v-for="(s, i) in otherSongs" :key="i" class="other-song-item" @click="openModalSong(s)">
+                  <img :src="s.thumbnail" alt="다른 곡 썸네일" />
+                  <span>{{ s.title }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Music Playbar (수정 후) -->
+      <div id="playbar" alt="Playbar">
+        <div class="pb-left">
+          <div class="album-art">
+            <img
+              :src="(currentPlaylist && currentPlaylist.songs && currentPlaylist.songs[currentSongIndex])
+                  ? currentPlaylist.songs[currentSongIndex].thumbnail 
+                  : 'source/profile.png'"
+              alt="Album Art"
+            />
+          </div>
+          <div class="song-info">
+            <p alt="song info">
+              <span class="song-title" style="text-transform: uppercase;">
+                {{ (currentPlaylist && currentPlaylist.songs && currentPlaylist.songs[currentSongIndex])
+                ? currentPlaylist.songs[currentSongIndex].title : '노래 제목' }}
+              </span><br>
+              <span class="song-artist" style="text-transform: uppercase;">
+                {{ (currentPlaylist && currentPlaylist.songs && currentPlaylist.songs[currentSongIndex])
+                ? currentPlaylist.songs[currentSongIndex].artist.name : '아티스트' }}
+              </span>
+            </p>
+          </div>
+        </div>
+        
+        <div class="pb-center">
+          <div class="controls" alt="music controller">
+            <div class="btn" @click="toggleRandom">
+              <img src="source/shuffle.png" alt="랜덤" :style="{ filter: isRandomMode ? 'sepia(100%) hue-rotate(90deg)' : 'none' }" />
+            </div>
+            <div class="btn" @click="prevSong">
+              <img src="source/previous.png" alt="이전" />
+            </div>
+            <div class="btn" @click="togglePlayPause">
+              <img :src="playPauseIcon" alt="재생/정지" />
+            </div>
+            <div class="btn" @click="nextSong">
+              <img src="source/next.png" alt="다음" />
+            </div>
+            <div class="btn" @click="toggleRepeat">
+              <img :src="repeatIcon" alt="반복" />
+            </div>
+          </div>
+          <label class="time-info" alt="music time info" for="progress-time-bar">
+            <div class="elapsed" alt="running time" >{{ elapsedTime }}</div>
+            <div class="progress">
+              <input
+                id="progress-time-bar"
+                type="range"
+                v-model="progress"
+                @input="seek"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div class="remaining" alt="remaining time">{{ remainingTime }}</div>
+          </label>
+        </div>
+        <label class="pb-right" alt="remote volume control" for="volume-bar">
+          <div class="volume-control" alt="remote volume">
+            <input
+              id="volume-bar"
+              type="range"
+              v-model="volume"
+              @input="setVolume"
+              min="0"
+              max="100"
+              alt="remote volume percent"
+            />
+          </div>
+          <div class="volume-percentage" alt="print volume percent">{{ volume }}%</div>
+        </label>
+      </div>
+    </div>
+
+  </body>
+</html>

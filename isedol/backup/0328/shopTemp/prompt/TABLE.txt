@@ -1,0 +1,26 @@
+쇼핑몰 db
+
+
+- goods
+idx 		int
+name		varchar
+price		int
+kind		varchar
+maker		varchar
+regis_date	date
+gender		varchar
+img		varchar
+
+- user
+idx	int
+id	varchar
+pass	varchar
+level	int
+last_in	date
+
+''::character varying
+
+http://arirang.co.kr
+http://seoul.co.kr
+http://home.co.kr
+

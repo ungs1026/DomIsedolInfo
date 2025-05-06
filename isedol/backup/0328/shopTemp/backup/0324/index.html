@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="HTML, CSS, JavaScript로 구성된 반응형 쇼핑몰 사이트. Home, Category, Event, All, User 페이지로 구성되며 세로 슬라이드, 사이드바, 슬라이더 기능을 제공합니다."
+    />
+    <meta
+      name="keywords"
+      content="쇼핑몰, 반응형, HTML, CSS, JavaScript, Home, Category, Event, All, User, 슬라이더, 사이드바"
+    />
+    <title>쇼핑몰</title>
+    <!-- Google Fonts: Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- CDN 방식 normalize.css -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+      integrity="sha512-oHDEc8XedK5y+Z8Jh3cFJ37Fjh6LO8Zj0y8ETl2Hqx6+36vX5RnQnXHqn+8Kw1p6aV6Y4P9T9RZ+3S3r9+5jmw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Swiper.js CDN (슬라이더 라이브러리) -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- GSAP, ScrollTrigger, Draggable via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/Draggable.min.js"></script>
+    <!-- Google Icon CDN -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <style>
+      :root {
+        --color-black: #000;
+        --color-white: #fff;
+        --color-gray: gray;
+        --color-light-gray: #ccc;
+        --color-dark-gray: #333;
+        --color-border: #ddd;
+        --color-text: #555;
+        --color-detail-bg: #f0f0f0;
+        --color-primary: #3498db;
+        --color-warning: #ffeb3b;
+        --color-danger: #e74c3c;
+        /* 기본 nav, footer 높이 (PC) */
+        --nav-height: 80px;
+        --footer-height: 150px;
+        /* 이벤트 grid 아이템의 높이 (예: 150px) */
+        --event-row-height: 150px;
+        --all-grid-width: 150;
+      }
+      /* 기본 레이아웃 */
+      body, html { margin: 0; padding: 0; font-family: "Kanit", sans-serif; scroll-behavior: smooth; background-color: var(--color-black); }
+      h1 { background-color: var(--color-black); color: var(--color-white); }
+      #main-nav { position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height); background-color: var(--color-gray); border-bottom: 1px solid var(--color-border); z-index: 1000; }
+      .nav-container { position: relative; width: 100%; height: 100%; }
+      .nav-links { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); list-style: none; margin: 0; padding: 0; display: flex; gap: 30px; }
+      .nav-links li a { text-decoration: none; color: var(--color-white); font-weight: bold; font-size: 1.1em; }
+      .nav-user { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 24px; color: var(--color-dark-gray); }
+      #sidebar { position: fixed; top: 0; right: -300px; width: 250px; height: 100%; background-color: var(--color-gray); box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); transition: right 0.5s ease; z-index: 999; padding: 20px; padding-top: 150px; }
+      #sidebar .sidebar-content { text-align: center; }
+      .profile-pic { width: 100px; height: 100px; background-color: var(--color-light-gray); border-radius: 50%; margin: 0 auto 10px; }
+      #sidebar .sidebar-content h3 { margin: 10px 0 5px; }
+      #sidebar .sidebar-content p { margin: 5px 0; font-size: 0.9em; color: var(--color-text); }
+      #sidebar .sidebar-content button { margin-top: 15px; padding: 8px 12px; border: none; background-color: var(--color-dark-gray); color: var(--color-white); cursor: pointer; }
+      #pages { margin-top: var(--nav-height); overflow-y: hidden; }
+      .page { display: none; }
+      .page h1 { text-align: center; margin: 20px 0; }
+      .page-section { position: relative; width: 100%; background-color: var(--color-black); display: flex; align-items: center; justify-content: center; padding: 10px 0; margin-bottom: 20px; }
+      .content { position: relative; width: 1200px; max-width: 100%; height: 100%; }
+      .container { position: relative; width: 1200px; max-width: 100%; text-align: center; padding: 20px; }
+
+      /* Home 슬라이더, Grid, 카드 등 기존 스타일 */
+      .slider-section1 { width: 90vw; max-width: 1200px; height: 30vh; max-height: 500px; margin: 0 auto; position: relative; background-color: transparent; overflow: hidden; }
+      .slider-section1 .swiper-wrapper { height: 100%; }
+      .slider-section1 .swiper-slide { width: min(1000px, 90%); height: 100%; display: flex; justify-content: center; align-items: center; color: var(--color-white); font-size: 2rem; }
+      .slider-section1 .swiper-button-prev { color: var(--color-white); left: 10px; }
+      .slider-section1 .swiper-button-next { color: var(--color-white); right: 10px; }
+      .grid-wrapper { overflow: hidden; margin: 0 auto; padding: 0 20px; position: relative; }
+      .grid-content { display: flex; gap: 10px; transform-style: preserve-3d; }
+      .grid { display: grid; grid-template-columns: repeat(10, 100px); grid-template-rows: repeat(4, 100px); gap: 10px; flex-shrink: 0; }
+      .grid-cell { width: 100px; height: 100px; background-color: var(--color-white); display: flex; align-items: center; justify-content: center; color: var(--color-black); font-weight: bold; border-radius: 10px; }
+      .grid-wrapper::before { content: ""; position: absolute; left: 0; top: 0; width: 50px; height: 100%; background: linear-gradient(to right, rgba(0, 0, 0, 0.8), transparent); transform: perspective(1000px) rotateY(15deg); transform-origin: left center; pointer-events: none; z-index: 2; }
+      .grid-wrapper::after { content: ""; position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent); transform: perspective(1000px) rotateY(-15deg); transform-origin: right center; pointer-events: none; z-index: 2; }
+      .card-list { height: 100%; display: flex; justify-content: center; gap: 20px; }
+      .card-item { width: 250px; height: 60%; background-color: var(--color-white); border: 1px solid var(--color-light-gray); color: var(--color-black); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; border-radius: 20px; margin: auto; }
+      .card-item:hover { transform: scale(1.05); }
+      .detail-view { position: absolute; width: 100%; top: 0; left: 0; width: 0; height: 34rem; background-color: var(--color-detail-bg); overflow: hidden; }
+      .close-detail { position: absolute; top: 10px; right: 10px; background: var(--color-danger); border: none; color: var(--color-white); font-size: 1.5em; cursor: pointer; z-index: 10; padding: 5px 10px; border-radius: 5px; }
+      .detail-header { width: 100%; height: 150px; display: flex; align-items: center; justify-content: center; }
+      .small-cards { display: flex; gap: 10px; }
+      .small-card { width: min(100px, 9.3vw); height: min(100px, 3.4vh); background-color: var(--color-light-gray); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 10px; }
+      .detail-body { display: flex; height: calc(90% - 128px); margin-inline: 2vw; }
+      .detail-slide-container, .detail-info { width: 50%; height: 100%; position: relative; }
+      .detail-swiper-container { width: 100%; height: 100%; overflow: hidden; }
+      .detail-swiper-container .swiper-wrapper { display: flex; }
+      .detail-swiper-container .swiper-slide { flex-shrink: 0; width: 100%; height: 100%; }
+      .solid-card { width: 100%; height: 100%; background-color: var(--color-primary); display: flex; align-items: center; justify-content: center; color: var(--color-white); font-size: 1.2em; }
+      .section5-content { width: 1200px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4rem; padding-inline: 20px; margin-bottom: 6rem; }
+      .left-card-container { perspective: 1000px; }
+      .left-card { width: 200px; height: 260px; background-color: var(--color-primary); box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.5); transform-style: preserve-3d; animation: cardRotate 3s infinite ease-in-out; }
+      .right-info { color: var(--color-white); text-align: left; max-width: 500px; }
+      .right-info h3, .right-info h4, .right-info p { margin: 10px 0; }
+      @keyframes cardRotate { 0% { transform: translateZ(0) rotateY(0deg); } 50% { transform: translateZ(40px) rotateY(15deg); } 100% { transform: translateZ(0) rotateY(0deg); } }
+      .section6-divider { position: relative; width: 98%; height: 4px; margin: 0 auto; background-color: var(--color-white); }
+      .section6-divider::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--color-white); filter: blur(4px); opacity: 0.5; pointer-events: none; }
+      .section6-content { width: 90%; max-width: 1000px; height: 100%; margin: 40px auto; display: flex; justify-content: space-between; align-items: center; gap: 60px; color: var(--color-white); }
+      .section6-image { position: relative; height: 100%; flex: 1; display: flex; justify-content: end; align-items: center; }
+      .section6-image .image-placeholder { width: 60%; height: 100%; background-color: var(--color-text); display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 50%; }
+      .section6-sns { display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
+      .sns-link { width: 32px; height: 32px; }
+      .sns-link img { width: 100%; height: 100%; object-fit: contain; filter: invert(); }
+      .sns-link:hover { transform: scale(1.1); }
+      .kakao-modal { display: none; position: absolute; top: 40px; left: 50%; transform: translateX(-50%); background-color: var(--color-warning); color: #000; padding: 5px 10px; border-radius: 5px; font-size: 14px; cursor: pointer; }
+
+      /* ---------- EVENT 페이지 grid 영역 수정 ---------- */
+      .event-grid-container { max-height: calc(var(--event-row-height) * 2.706); overflow: hidden; transition: max-height 0.3s ease; }
+      .toggle-grid-btn { display: block; margin: 10px auto; padding: 8px 16px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+      .toggle-grid-btn:hover { background-color: var(--color-primary); }
+      /* ---------- ALL 페이지 스타일 추가 ---------- */
+      #all-page .container { width: 1200px; margin: auto; padding: 20px; }
+      #all-page .all-top { margin-bottom: 20px; }
+      #all-page .classification-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+      #all-page .classification-label { font-size: 1.2em; font-weight: bold; color: var(--color-white); }
+      #all-page .classification-buttons button { margin-right: 10px; padding: 8px 12px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+      #all-page .classification-buttons button:hover, #all-page .classification-buttons button.active { background-color: var(--color-primary); }
+      #all-page .all-search { margin-top: 15px; text-align: right; }
+      #all-page .all-search input { padding: 8px; width: 300px; border: 1px solid var(--color-border); border-radius: 4px; }
+      #all-page .all-search button { padding: 8px 12px; margin-left: 5px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; }
+      #all-page .all-grid { display: grid; gap: 10px; margin-top: 20px; }
+      #all-page .all-grid .grid-item { background-color: var(--color-light-gray); padding: 10px; border: 1px solid var(--color-border); text-align: center; color: var(--color-black); }
+      /* 기타 미디어 쿼리 및 Category 페이지 스타일은 기존대로 유지 */
+      @media (max-width: 1024px) { :root { --nav-height: 70px; --footer-height: 150px; } .content, .container, .section5-content, .section6-content { width: 90%; } .slider { width: 90%; height: auto; } .slide { width: 100%; } .nav-links { gap: 20px; font-size: 1em; } .category-container { width: 90%; height: calc(100vh - var(--nav-height) - var(--footer-height)); } }
+      @media (max-width: 768px) { :root { --nav-height: 100px; --footer-height: 100px; } .nav-links { gap: 15px; font-size: 0.9em; } .nav-user { right: 10px; } #sidebar { width: 250px; right: -18rem; } .slider { width: 90%; } .slide { max-width: 90%; } .card { position: relative !important; width: 80% !important; height: auto !important; margin: 20px auto; transform: translateY(0) !important; } .content { height: auto; } .desktop-grid { display: none; } .mobile-grid { display: block; margin: 20px auto; width: 90%; } .paginated-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 10px; } .pagination-controls { text-align: center; margin-top: 10px; } .pagination-controls button { padding: 5px 10px; margin: 0 5px; } .section6-divider { width: 90%; } .section6-content { flex-direction: column; height: auto; gap: 10px; padding-bottom: 20px; font-size: 0.9em; } .section6-sns .sns-link { font-size: 24px; } .category-container { width: 90%; height: calc(100vh - var(--nav-height) - var(--footer-height)); } }
+      /* ---------- Category Page 스타일 (기존 유지) ---------- */
+      .category-container { width: 1200px; height: calc(100vh - var(--nav-height) - var(--footer-height)); margin: 0 auto; display: flex; box-sizing: border-box; }
+      .category-sidebar { width: 10vw; padding: 10px; box-sizing: border-box; color: var(--color-white); }
+      .category-sidebar .filter-group { margin-bottom: 20px; }
+      .category-sidebar .filter-group h3 { margin-bottom: 10px; font-size: 1.1em; }
+      .category-sidebar .filter-group ul { list-style: none; padding: 0; margin: 0; }
+      .category-sidebar .filter-group ul li { padding: 5px; cursor: pointer; border: 1px solid var(--color-border); margin-bottom: 5px; border-radius: 4px; }
+      .category-sidebar .filter-group ul li.active { background-color: var(--color-primary); color: var(--color-white); }
+      .price-filter { display: flex; align-items: center; gap: 5px; }
+      .price-filter input[type="range"] { width: 80%; }
+      .category-main { flex: 1; display: flex; flex-direction: column; margin-left: 20px; height: 100%; width: calc(100% - 10vw); }
+      .category-slider-container { height: 300px; margin-bottom: 10px; }
+      .category-slider { width: 100%; height: 100%; border-radius: 4px; overflow: hidden; position: relative; }
+      .category-slider .swiper-button-prev { left: 10px; right: auto; }
+      .category-slider .swiper-button-next { right: 10px; left: auto; }
+      .filter-display h2 { font-size: 1.5em; margin: 0 0 10px 0; color: var(--color-white); text-align: left; }
+      .product-grid-wrapper { flex: 1; overflow-y: auto; padding-right: 10px; }
+      .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+      .product-card { background-color: var(--color-light-gray); padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; text-align: center; color: var(--color-black); }
+      /* Footer 영역 */
+      #section6 { height: var(--footer-height); }
+      /* ---------- EVENT 페이지 (기존 기능 복원) ---------- */
+      #event-page { width: 100%; padding: 20px 0; }
+      .event-section { max-width: 1200px; margin: 40px auto; display: flex; flex-direction: column; border: 1px solid var(--color-border); }
+      .event-top { position: relative; height: 300px; }
+      .event-middle { flex: 2; display: flex; flex-direction: column; justify-content: space-around; }
+      .event-bottom { overflow-y: auto; }
+      .event-top-swiper { width: 100%; height: 100%; }
+      .event-top-swiper .swiper-slide { display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--color-white); }
+      .banner-text { font-weight: bold; }
+      .event-top-prev, .event-top-next { color: var(--color-white); }
+      .event-category-row { display: flex; justify-content: center; gap: 10px; }
+      .event-category-btn { flex: 1; max-width: 150px; padding: 10px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; cursor: pointer; border-radius: 4px; transition: background-color 0.3s; }
+      .event-category-btn:hover, .event-category-btn.active { background-color: var(--color-primary); }
+      .event-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 10px; }
+      .event-grid-item { background-color: var(--color-light-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; border: 1px solid var(--color-border); border-radius: 4px; }
+      .event-grid-item .item-image { width: 100%; height: 100px; background-color: var(--color-gray); margin-bottom: 10px; }
+      .event-grid-item .item-name { font-weight: bold; margin-bottom: 5px; }
+      .event-grid-item .item-price { color: var(--color-primary); }
+      @media (max-width: 1024px) { .event-section { height: 700px; } }
+      @media (max-width: 768px) { .event-section { height: 600px; } .event-grid { grid-template-columns: repeat(3, 1fr); } }
+
+      /* ---------- ALL 페이지 스타일 추가 ---------- */
+      #all-page .container { width: 1200px; margin: auto; padding: 20px; }
+      #all-page .all-top { margin-bottom: 20px; }
+      #all-page .classification-row { display: flex; align-items: center; justify-content: start; gap: 2rem; margin-bottom: 10px; }
+      #all-page .classification-label { font-size: 1.2em; font-weight: bold; color: var(--color-white); }
+      #all-page .classification-buttons button { margin-right: 10px; padding: 8px 12px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+      #all-page .classification-buttons button:hover, #all-page .classification-buttons button.active { background-color: var(--color-primary); }
+      #all-page .all-search { margin-top: 15px; text-align: right; }
+      #all-page .all-search input { padding: 8px; width: 300px; border: 1px solid var(--color-border); border-radius: 4px; }
+      #all-page .all-search button { padding: 8px 12px; margin-left: 5px; background-color: var(--color-dark-gray); color: var(--color-white); border: none; border-radius: 4px; cursor: pointer; }
+      #all-page .all-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+      #all-page .all-grid .grid-item { background-color: var(--color-light-gray); padding: 10px; border: 1px solid var(--color-border); text-align: center; color: var(--color-black); }
+      /* ---------- User 모달 스타일 추가 ---------- */
+      #user-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; z-index: 2000; overflow-y: auto; }
+      #user-modal .modal-content { background-color: var(--color-white); max-width: 600px; margin: 50px auto; padding: 20px; border-radius: 8px; color: #000; }
+      #user-modal .modal-content h1 { text-align: center; margin-bottom: 20px; }
+      #user-modal .user-info div { margin-bottom: 15px; }
+      #user-modal .user-info span { display: inline-block; min-width: 150px; }
+      #user-modal .user-info button.edit-button { margin-left: 10px; }
+      #user-modal .user-info input[type="text"], #user-modal .user-info input[type="password"] { padding: 5px; width: 200px; }
+      #user-modal .user-info input[type="file"] { margin-left: 10px; }
+
+    </style>
+  </head>
+  <body>
+    <nav id="main-nav">
+      <div class="nav-container">
+        <ul class="nav-links">
+          <li><a href="#home" class="nav-item">HOME</a></li>
+          <li><a href="#category" class="nav-item">CATEGORY</a></li>
+          <li><a href="#event" class="nav-item">EVENT</a></li>
+          <li><a href="#all" class="nav-item">ALL</a></li>
+        </ul>
+        <div class="nav-user">
+          <span id="user-dot">&#9679;</span>
+        </div>
+      </div>
+    </nav>
+    <!-- 공통 user 사이드바 -->
+    <div id="sidebar">
+      <div class="sidebar-content">
+        <div class="profile-pic"></div>
+        <h3>닉네임: JINGBURGER</h3>
+        <p style="color: white">등급: SILVER</p>
+        <p id="last-login" style="color: white"></p>
+        <!-- 사이드바 버튼 클릭 시, 비밀번호 확인 후 User 모달 띄움 -->
+        <button id="editProfile">정보 수정</button>
+      </div>
+    </div>
+    <!-- SPA 페이지들 -->
+    <div id="pages">
+      <!-- Home Page (기존 내용 그대로) -->
+      <section id="home-page" class="page">
+        <!-- Section1: 슬라이드 – Swiper 적용 (자동전환 2초) -->
+        <div class="page-section" style="margin-top: 8rem">
+          <div class="container">
+            <div class="swiper-container slider-section1">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide" style="background-color: gray">
+                  <div style="width: min(800px, 90%); height: 100%">
+                    Slide 1
+                  </div>
+                </div>
+                <div class="swiper-slide" style="background-color: green">
+                  <div style="width: 800px; height: 100%">Slide 2</div>
+                </div>
+                <div class="swiper-slide" style="background-color: cyan">
+                  <div style="height: 100%">Slide 3</div>
+                </div>
+              </div>
+              <div class="swiper-button-prev slider1-prev"></div>
+              <div class="swiper-button-next slider1-next"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Section2: 카드 영역 (Home) -->
+        <div class="page-section">
+          <div
+            class="container content"
+            style="height: 30rem; margin-bottom: 8rem; position: relative"
+          >
+            <div
+              class="card"
+              data-url="https://example.com/1"
+              style="width: 300px; height: 200px; background-color: #999"
+            ></div>
+            <div
+              class="card"
+              data-url="https://example.com/2"
+              style="width: 300px; height: 200px; background-color: #999"
+            ></div>
+            <div
+              class="card"
+              data-url="https://example.com/3"
+              style="width: 300px; height: 200px; background-color: #999"
+            ></div>
+            <div
+              class="card"
+              data-url="https://example.com/4"
+              style="width: 300px; height: 200px; background-color: #999"
+            ></div>
+          </div>
+        </div>
+        <!-- Section3: Grid 영역 (Home) -->
+        <div class="page-section">
+          <div class="container">
+            <div class="grid-wrapper">
+              <div class="grid-content">
+                <div class="grid">
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                </div>
+                <div class="grid">
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                  <div class="grid-cell">1</div>
+                  <div class="grid-cell">2</div>
+                  <div class="grid-cell">3</div>
+                  <div class="grid-cell">4</div>
+                  <div class="grid-cell">5</div>
+                  <div class="grid-cell">6</div>
+                  <div class="grid-cell">7</div>
+                  <div class="grid-cell">8</div>
+                  <div class="grid-cell">9</div>
+                  <div class="grid-cell">10</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Section4: 카드 리스트 & 상세 전환 (Home) -->
+        <div class="page-section">
+          <div class="container section4-container" style="height: 34vh">
+            <div class="card-list">
+              <div class="card-item" data-detail="detail1">Card 1</div>
+              <div class="card-item" data-detail="detail2">Card 2</div>
+              <div class="card-item" data-detail="detail3">Card 3</div>
+              <div class="card-item" data-detail="detail4">Card 4</div>
+            </div>
+            <div class="detail-view">
+              <button class="close-detail">X</button>
+              <div class="detail-header">
+                <div class="small-cards">
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 1"
+                    data-image="https://via.placeholder.com/400x300?text=Image1"
+                  >
+                    Small 1
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 2"
+                    data-image="https://via.placeholder.com/400x300?text=Image2"
+                  >
+                    Small 2
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 3"
+                    data-image="https://via.placeholder.com/400x300?text=Image3"
+                  >
+                    Small 3
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 4"
+                    data-image="https://via.placeholder.com/400x300?text=Image4"
+                  >
+                    Small 4
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 5"
+                    data-image="https://via.placeholder.com/400x300?text=Image5"
+                  >
+                    Small 5
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 6"
+                    data-image="https://via.placeholder.com/400x300?text=Image6"
+                  >
+                    Small 6
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 7"
+                    data-image="https://via.placeholder.com/400x300?text=Image7"
+                  >
+                    Small 7
+                  </div>
+                  <div
+                    class="small-card"
+                    data-info="Detail Info 8"
+                    data-image="https://via.placeholder.com/400x300?text=Image8"
+                  >
+                    Small 8
+                  </div>
+                </div>
+              </div>
+              <div class="detail-body">
+                <div class="detail-slide-container">
+                  <div class="swiper-container detail-swiper-container">
+                    <div class="swiper-wrapper"></div>
+                    <div
+                      class="swiper-button-prev detail-swiper-button-prev"
+                      style="color: black"
+                    ></div>
+                    <div
+                      class="swiper-button-next detail-swiper-button-next"
+                      style="color: black"
+                    ></div>
+                  </div>
+                </div>
+                <div class="detail-info">Detailed Information Placeholder</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Section5: Home Section 5 -->
+        <div class="page-section">
+          <div class="section5-content">
+            <div class="left-card-container">
+              <div class="left-card"></div>
+            </div>
+            <div class="right-info">
+              <h3>이름: 예시 이름</h3>
+              <h4>부제목: 예시 부제목</h4>
+              <p>
+                상세 설명: 여기에 상세 설명을 입력하세요. 추가 정보를 넣어
+                사이트 방문자에게 내용을 전달합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Section6: Footer (Home의 Section6 재사용) -->
+        <div class="section6-divider"></div>
+        <div class="page-section" style="margin: 0; padding: 0">
+          <section id="section6">
+            <div class="section6-content" style="width: 1200px">
+              <div class="section6-image">
+                <div class="image-placeholder">Image</div>
+              </div>
+              <div class="section6-sns">
+                <a
+                  href="https://github.com/yourlink"
+                  target="_blank"
+                  class="sns-link"
+                >
+                  <img src="./git.png" alt="git" />
+                </a>
+                <a
+                  href="https://www.notion.so/yourlink"
+                  target="_blank"
+                  class="sns-link"
+                >
+                  <img src="./notion.png" alt="notion" />
+                </a>
+                <a
+                  href="https://www.instagram.com/yourlink"
+                  target="_blank"
+                  class="sns-link"
+                >
+                  <img src="./insta.png" alt="insta" />
+                </a>
+                <a href="#" class="sns-link sns-kakao">
+                  <img src="./kakao.png" alt="kakao" />
+                </a>
+                <div class="kakao-modal">kakaoID1234</div>
+              </div>
+              <div class="section6-contact">
+                <div class="contact-field">
+                  <label>이름:</label>
+                  <span>홍길동</span>
+                </div>
+                <div class="contact-field">
+                  <label>전공:</label>
+                  <span>컴퓨터공학</span>
+                </div>
+                <div class="contact-field contact-phone">
+                  <label>전화번호:</label>
+                  <span class="phone-text">010-1234-5678</span>
+                  <div class="phone-modal">010-1234-5678</div>
+                </div>
+                <div class="contact-field">
+                  <label>사는 곳:</label>
+                  <span>서울</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <!-- Category Page (기존 내용 그대로) -->
+      <section id="category-page" class="page">
+        <div class="category-container">
+          <!-- 좌측 사이드바 -->
+          <div class="category-sidebar">
+            <div class="filter-group">
+              <h3>성별</h3>
+              <ul>
+                <li data-filter-type="gender" data-filter-value="남성">남성</li>
+                <li data-filter-type="gender" data-filter-value="여성">여성</li>
+              </ul>
+            </div>
+            <div class="filter-group">
+              <h3>메이커</h3>
+              <ul>
+                <li data-filter-type="maker" data-filter-value="프라다">
+                  프라다
+                </li>
+                <li data-filter-type="maker" data-filter-value="구찌">구찌</li>
+                <li data-filter-type="maker" data-filter-value="루이비통">
+                  루이비통
+                </li>
+              </ul>
+            </div>
+            <div class="filter-group">
+              <h3>분류</h3>
+              <ul>
+                <li data-filter-type="category" data-filter-value="상의">
+                  상의
+                </li>
+                <li data-filter-type="category" data-filter-value="하의">
+                  하의
+                </li>
+                <li data-filter-type="category" data-filter-value="아우터">
+                  아우터
+                </li>
+                <li data-filter-type="category" data-filter-value="악세서리">
+                  악세서리
+                </li>
+              </ul>
+            </div>
+            <div class="filter-group">
+              <h3>색상</h3>
+              <ul>
+                <li data-filter-type="color" data-filter-value="빨강">빨강</li>
+                <li data-filter-type="color" data-filter-value="파랑">파랑</li>
+                <li data-filter-type="color" data-filter-value="검정">검정</li>
+                <li data-filter-type="color" data-filter-value="하양">하양</li>
+              </ul>
+            </div>
+            <div class="filter-group">
+              <h3>가격</h3>
+              <div class="price-filter">
+                <button class="price-decrease">◀</button>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  step="10"
+                  value="200"
+                  class="price-range"
+                />
+                <button class="price-increase">▶</button>
+                <span class="price-value">200</span>
+              </div>
+            </div>
+          </div>
+          <!-- 메인 영역 -->
+          <div class="category-main">
+            <!-- 상단 슬라이더 -->
+            <div class="category-slider-container">
+              <div class="swiper-container category-slider">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide" style="background-color: gray">
+                    Category Slide 1
+                  </div>
+                  <div class="swiper-slide" style="background-color: blue">
+                    Category Slide 2
+                  </div>
+                  <div class="swiper-slide" style="background-color: cyan">
+                    Category Slide 3
+                  </div>
+                </div>
+                <div class="swiper-button-prev category-slider-prev"></div>
+                <div class="swiper-button-next category-slider-next"></div>
+              </div>
+            </div>
+            <!-- 필터 적용 제목 -->
+            <div class="filter-display">
+              <h2 id="filter-title">전체 상품</h2>
+            </div>
+            <!-- 상품 grid (Category) -->
+            <div class="product-grid-wrapper">
+              <div class="product-grid">
+                <!-- JavaScript로 더미데이터 기반 상품 카드 생성 -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section6-divider"></div>
+        <section id="section6">
+          <div class="section6-content" style="width: 1200px">
+            <div class="section6-image">
+              <div class="image-placeholder">Image</div>
+            </div>
+            <div class="section6-sns">
+              <a
+                href="https://github.com/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./git.png" alt="git" />
+              </a>
+              <a
+                href="https://www.notion.so/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./notion.png" alt="notion" />
+              </a>
+              <a
+                href="https://www.instagram.com/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./insta.png" alt="insta" />
+              </a>
+              <a href="#" class="sns-link sns-kakao">
+                <img src="./kakao.png" alt="kakao" />
+              </a>
+              <div class="kakao-modal">kakaoID1234</div>
+            </div>
+            <div class="section6-contact">
+              <div class="contact-field">
+                <label>이름:</label>
+                <span>홍길동</span>
+              </div>
+              <div class="contact-field">
+                <label>전공:</label>
+                <span>컴퓨터공학</span>
+              </div>
+              <div class="contact-field contact-phone">
+                <label>전화번호:</label>
+                <span class="phone-text">010-1234-5678</span>
+                <div class="phone-modal">010-1234-5678</div>
+              </div>
+              <div class="contact-field">
+                <label>사는 곳:</label>
+                <span>서울</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+      <!-- EVENT 페이지 (이전 복원된 기능 적용 + grid 영역 수정) -->
+      <section id="event-page" class="page">
+        <!-- 첫 번째 이벤트 섹션 -->
+        <div class="event-section">
+          <!-- 상단: 배너 슬라이더 -->
+          <div class="event-top">
+            <div class="swiper-container event-top-swiper">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide" style="background-color: #ff5733">
+                  <div class="banner-text">Banner 1</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #33ff57">
+                  <div class="banner-text">Banner 2</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #3357ff">
+                  <div class="banner-text">Banner 3</div>
+                </div>
+              </div>
+              <div class="swiper-button-prev event-top-prev"></div>
+              <div class="swiper-button-next event-top-next"></div>
+            </div>
+          </div>
+          <!-- 중단: 분류 버튼 영역 (유지) -->
+          <div class="event-middle">
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+          </div>
+          <!-- 하단: grid 영역 수정 -->
+          <div class="event-bottom">
+            <div class="event-grid-container">
+              <div class="event-grid">
+                <!-- JavaScript를 통해 아이템이 동적으로 채워짐 -->
+              </div>
+            </div>
+            <button class="toggle-grid-btn">더보기</button>
+          </div>
+        </div>
+        <!-- 두 번째 이벤트 섹션 (구조 동일) -->
+        <div class="event-section">
+          <div class="event-top">
+            <div class="swiper-container event-top-swiper">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide" style="background-color: #ff5733">
+                  <div class="banner-text">Banner 1</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #33ff57">
+                  <div class="banner-text">Banner 2</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #3357ff">
+                  <div class="banner-text">Banner 3</div>
+                </div>
+              </div>
+              <div class="swiper-button-prev event-top-prev"></div>
+              <div class="swiper-button-next event-top-next"></div>
+            </div>
+          </div>
+          <div class="event-middle">
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+          </div>
+          <div class="event-bottom">
+            <div class="event-grid-container">
+              <div class="event-grid"></div>
+            </div>
+            <button class="toggle-grid-btn">더보기</button>
+          </div>
+        </div>
+        <!-- 세 번째 이벤트 섹션 (구조 동일) -->
+        <div class="event-section">
+          <div class="event-top">
+            <div class="swiper-container event-top-swiper">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide" style="background-color: #ff5733">
+                  <div class="banner-text">Banner 1</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #33ff57">
+                  <div class="banner-text">Banner 2</div>
+                </div>
+                <div class="swiper-slide" style="background-color: #3357ff">
+                  <div class="banner-text">Banner 3</div>
+                </div>
+              </div>
+              <div class="swiper-button-prev event-top-prev"></div>
+              <div class="swiper-button-next event-top-next"></div>
+            </div>
+          </div>
+          <div class="event-middle">
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+            <div class="event-category-row">
+              <button class="event-category-btn" data-category="all">
+                전체
+              </button>
+              <button class="event-category-btn" data-category="cat1">
+                카테고리1
+              </button>
+              <button class="event-category-btn" data-category="cat2">
+                카테고리2
+              </button>
+              <button class="event-category-btn" data-category="cat3">
+                카테고리3
+              </button>
+              <button class="event-category-btn" data-category="cat4">
+                카테고리4
+              </button>
+            </div>
+          </div>
+          <div class="event-bottom">
+            <div class="event-grid-container">
+              <div class="event-grid"></div>
+            </div>
+            <button class="toggle-grid-btn">더보기</button>
+          </div>
+        </div>
+        <!-- Footer: Home의 Section6 재사용 -->
+        <div class="section6-divider"></div>
+        <section id="section6">
+          <div class="section6-content" style="width: 1200px">
+            <div class="section6-image">
+              <div class="image-placeholder">Image</div>
+            </div>
+            <div class="section6-sns">
+              <a
+                href="https://github.com/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./git.png" alt="git" />
+              </a>
+              <a
+                href="https://www.notion.so/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./notion.png" alt="notion" />
+              </a>
+              <a
+                href="https://www.instagram.com/yourlink"
+                target="_blank"
+                class="sns-link"
+              >
+                <img src="./insta.png" alt="insta" />
+              </a>
+              <a href="#" class="sns-link sns-kakao">
+                <img src="./kakao.png" alt="kakao" />
+              </a>
+              <div class="kakao-modal">kakaoID1234</div>
+            </div>
+            <div class="section6-contact">
+              <div class="contact-field">
+                <label>이름:</label>
+                <span>홍길동</span>
+              </div>
+              <div class="contact-field">
+                <label>전공:</label>
+                <span>컴퓨터공학</span>
+              </div>
+              <div class="contact-field contact-phone">
+                <label>전화번호:</label>
+                <span class="phone-text">010-1234-5678</span>
+                <div class="phone-modal">010-1234-5678</div>
+              </div>
+              <div class="contact-field">
+                <label>사는 곳:</label>
+                <span>서울</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+      <!-- ALL 페이지 (기존 내용 유지) -->
+      <section id="all-page" class="page">
+        <div class="container">
+          <!-- All 페이지 상단: 분류 버튼 및 검색바 -->
+          <div class="all-top">
+            <!-- 분류 행: 성별 -->
+            <div class="classification-row" data-type="gender">
+              <span class="classification-label">성별</span>
+              <div class="classification-buttons">
+                <button data-filter="전체" class="active">전체</button>
+                <button data-filter="남성">남성</button>
+                <button data-filter="여성">여성</button>
+              </div>
+            </div>
+            <!-- 분류 행: 카테고리 -->
+            <div class="classification-row" data-type="category">
+              <span class="classification-label">카테고리</span>
+              <div class="classification-buttons">
+                <button data-filter="전체" class="active">전체</button>
+                <button data-filter="상의">상의</button>
+                <button data-filter="하의">하의</button>
+              </div>
+            </div>
+            <!-- 분류 행: 가격 -->
+            <div class="classification-row" data-type="price">
+              <span class="classification-label">가격</span>
+              <div class="classification-buttons">
+                <button data-filter="all" class="active">전체</button>
+                <button data-filter="low">최저</button>
+                <button data-filter="mid">중간</button>
+                <button data-filter="high">최고</button>
+              </div>
+            </div>
+            <!-- 검색바 -->
+            <div class="all-search">
+              <input
+                type="text"
+                placeholder="검색어를 입력하세요"
+                id="all-search-input"
+              />
+              <button id="all-search-btn">검색</button>
+            </div>
+          </div>
+          <!-- All 페이지 하단: Grid 영역 (한 행에 8개 아이템) -->
+          <div class="all-grid">
+            <!-- JavaScript를 통해 동적으로 아이템 채움 -->
+          </div>
+        </div>
+      </section>
+      <!-- ---------- User 모달 (SPA 내에서 오버레이 방식) ---------- -->
+      <div id="user-modal">
+        <div class="modal-content">
+          <h1>사용자 정보</h1>
+          <div class="user-info">
+            <div class="user-field user-image">
+              <span>이미지:</span>
+              <!-- 기본 단색 카드 이미지(예: 회색 배경) -->
+              <img
+                id="user-image"
+                src=""
+                alt="User Image"
+                style="
+                  width: 150px;
+                  height: 150px;
+                  background-color: #ccc;
+                  object-fit: cover;
+                "
+              />
+              <button class="edit-button" data-field="image">정보 수정</button>
+            </div>
+            <div class="user-field user-nickname">
+              <span id="user-nickname-text">닉네임: JINGBURGER</span>
+              <button class="edit-button" data-field="nickname">
+                정보 수정
+              </button>
+            </div>
+            <div class="user-field user-grade">
+              <span id="user-grade-text">등급: SILVER</span>
+              <!-- 등급은 수정 기능 없이 표시 -->
+            </div>
+            <div class="user-field user-last-login">
+              <span id="user-last-login-text"
+                >마지막 로그인:
+                <script>
+                  document.write(new Date().toLocaleString());
+                </script></span
+              >
+            </div>
+            <div class="user-field user-password">
+              <span id="user-password-text">비밀번호: 1234</span>
+              <button class="edit-button" data-field="password">
+                정보 수정
+              </button>
+            </div>
+          </div>
+          <!-- 닫기 버튼 -->
+          <button
+            id="closeUserModal"
+            style="margin-top: 20px; padding: 8px 12px"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+
+      
+      let detailSwiper;
+      // SPA 페이지 전환 함수 (기존 그대로)
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page")
+          .forEach((page) => (page.style.display = "none"));
+        document.getElementById(pageId + "-page").style.display = "block";
+        document.getElementById("main-nav").style.display =
+          pageId === "user" ? "none" : "block";
+      }
+
+      // 사이드바의 "정보 수정" 버튼 클릭 시, 비밀번호 확인 후 User 모달 오버레이 표시
+      document
+        .getElementById("editProfile")
+        .addEventListener("click", function () {
+          var inputPwd = prompt("비밀번호를 입력하세요");
+          if (inputPwd === "1234") {
+            document.getElementById("user-modal").style.display = "block";
+          } else {
+            alert("비밀번호가 틀렸습니다.");
+          }
+        });
+
+      // User 모달 닫기 버튼
+      document
+        .getElementById("closeUserModal")
+        .addEventListener("click", function () {
+          document.getElementById("user-modal").style.display = "none";
+        });
+
+      // PC용 무한 스크롤 그리드 생성 (Home 페이지용)
+      function generateDesktopGridRows() {
+        const container = document.getElementById("desktop-grid");
+        if (container) {
+          container.innerHTML = "";
+          for (let row = 0; row < 4; row++) {
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "grid-row";
+            let rowContent = "";
+            for (let col = 0; col < 10; col++) {
+              const cellValue = col === 0 ? "40" : col.toString();
+              rowContent += `<div class="grid-cell">${cellValue}</div>`;
+            }
+            rowDiv.innerHTML = rowContent + rowContent;
+            container.appendChild(rowDiv);
+          }
+        }
+      }
+      window.addEventListener("DOMContentLoaded", () => {
+        let page = window.location.hash.replace("#", "") || "home";
+        showPage(page);
+        function getFormattedDate() {
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, "0");
+          const date = String(now.getDate()).padStart(2, "0");
+          const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+          const day = dayNames[now.getDay()];
+          const hours = String(now.getHours()).padStart(2, "0");
+          const minutes = String(now.getMinutes()).padStart(2, "0");
+          return `${year}.${month}.${date} (${day}) ${hours}:${minutes}`;
+        }
+        document.getElementById("last-login").textContent =
+          "마지막 로그인: " + getFormattedDate();
+        generateDesktopGridRows();
+        document.querySelectorAll(".desktop-grid .grid-row")?.forEach((row) => {
+          gsap.to(row, {
+            x: -1100,
+            duration: 10,
+            repeat: -1,
+            ease: "none",
+            modifiers: { x: gsap.utils.unitize((x) => parseFloat(x) % -1100) },
+          });
+        });
+        initGridPagination();
+      });
+      document.querySelectorAll(".nav-item").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const targetPage = e.target.getAttribute("href").substring(1);
+          window.location.hash = targetPage;
+          showPage(targetPage);
+        });
+      });
+      const userDot = document.getElementById("user-dot");
+      const sidebar = document.getElementById("sidebar");
+      let sidebarOpen = false;
+      userDot.addEventListener("click", () => {
+        sidebarOpen = !sidebarOpen;
+        const sidebarWidth = window.innerWidth <= 768 ? 250 : 300;
+        sidebar.style.right = sidebarOpen ? "0" : "-" + sidebarWidth + "px";
+      });
+      // Home 슬라이더 초기화
+      var section1Swiper = new Swiper(".slider-section1", {
+        loop: true,
+        navigation: {
+          nextEl: ".slider1-next",
+          prevEl: ".slider1-prev",
+        },
+      });
+      let gridTween;
+      window.addEventListener("DOMContentLoaded", function () {
+        gridTween = gsap.to(".grid-content", {
+          x: -1090,
+          ease: "none",
+          duration: 10,
+          repeat: -1,
+          modifiers: { x: gsap.utils.unitize((x) => parseFloat(x) % -1100) },
+        });
+      });
+      // Home Section4 클릭 이벤트 (기존 코드 복원)
+      document.querySelectorAll(".card-item").forEach((card) => {
+        card.addEventListener("click", function () {
+          gsap.to(".card-list", {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+              document.querySelector(".card-list").style.display = "none";
+              const detailView = document.querySelector(".detail-view");
+              detailView.style.display = "block";
+              document.querySelector(".detail-body").style.display = "flex";
+              gsap.to(detailView, {
+                width: "100%",
+                height: "100%",
+                duration: 1,
+                ease: "power.out",
+                onComplete: () => {
+                  populateSlider();
+                  initDetailSwiper();
+                },
+              });
+            },
+          });
+        });
+      });
+      document.querySelectorAll(".small-card").forEach((card) => {
+        card.addEventListener("click", function () {
+          const info = card.getAttribute("data-info");
+          document.querySelector(".detail-info").innerText =
+            "Information: " + info;
+        });
+      });
+      document
+        .querySelector(".close-detail")
+        .addEventListener("click", function () {
+          const detailView = document.querySelector(".detail-view");
+          const cardList = document.querySelector(".card-list");
+          gsap.to(detailView, {
+            width: "0",
+            duration: 1,
+            ease: "power2.inOut",
+            onComplete: () => {
+              detailView.style.display = "none";
+              document.querySelector(".detail-body").style.display = "none";
+              cardList.style.display = "flex";
+              gsap.to(cardList, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out",
+              });
+            },
+          });
+        });
+      function populateSlider() {
+        const sliderWrapper = document.querySelector(
+          ".detail-swiper-container .swiper-wrapper"
+        );
+        sliderWrapper.innerHTML = "";
+        for (let i = 0; i < 4; i++) {
+          const slideEl = document.createElement("div");
+          slideEl.classList.add("swiper-slide");
+          const card = document.createElement("div");
+          card.classList.add("solid-card");
+          card.textContent = "Card " + (i + 1);
+          slideEl.appendChild(card);
+          sliderWrapper.appendChild(slideEl);
+        }
+      }
+      function initDetailSwiper() {
+        if (detailSwiper) {
+          detailSwiper.destroy(true, true);
+        }
+        detailSwiper = new Swiper(".detail-swiper-container", {
+          loop: true,
+          autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+          },
+          navigation: {
+            nextEl: ".detail-swiper-button-next",
+            prevEl: ".detail-swiper-button-prev",
+          },
+        });
+      }
+      function copyText(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            console.log("Copied: " + text);
+          })
+          .catch((err) => {
+            console.error("Copy error: ", err);
+          });
+      }
+      const kakaoLink = document.querySelector(".sns-kakao");
+      const kakaoModal = document.querySelector(".kakao-modal");
+      if (kakaoLink && kakaoModal) {
+        kakaoLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          kakaoModal.style.display = "block";
+          gsap.fromTo(
+            kakaoModal,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5 }
+          );
+        });
+        kakaoModal.addEventListener("click", function () {
+          copyText(kakaoModal.textContent);
+          gsap.to(kakaoModal, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+              kakaoModal.style.display = "none";
+            },
+          });
+        });
+      }
+      const phoneText = document.querySelector(".phone-text");
+      const phoneModal = document.querySelector(".phone-modal");
+      if (phoneText && phoneModal) {
+        phoneText.addEventListener("click", function () {
+          phoneModal.style.display = "block";
+          gsap.fromTo(
+            phoneModal,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5 }
+          );
+        });
+        phoneModal.addEventListener("click", function () {
+          copyText(phoneModal.textContent);
+          gsap.to(phoneModal, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+              phoneModal.style.display = "none";
+            },
+          });
+        });
+      }
+      /* ---------- Category Page 스크립트 (기존 유지) ---------- */
+      if (document.getElementById("category-page")) {
+        const makers = ["프라다", "구찌", "루이비통"];
+        const categories = ["상의", "하의", "아우터", "악세서리"];
+        const genders = ["남성", "여성"];
+        const colors = ["빨강", "파랑", "검정", "하양"];
+        const dummyProducts = [];
+        for (let i = 1; i <= 40; i++) {
+          dummyProducts.push({
+            name: "상품" + i,
+            price: Math.floor(Math.random() * 181 + 20),
+            maker: makers[Math.floor(Math.random() * makers.length)],
+            category: categories[Math.floor(Math.random() * categories.length)],
+            gender: genders[Math.floor(Math.random() * genders.length)],
+            color: colors[Math.floor(Math.random() * colors.length)],
+          });
+        }
+        let activeFilters = {
+          gender: null,
+          maker: null,
+          category: null,
+          color: null,
+          price: 200,
+        };
+        const productGrid = document.querySelector(".product-grid");
+        const filterTitle = document.getElementById("filter-title");
+        function renderProducts() {
+          let filtered = dummyProducts.filter((product) => {
+            let match = true;
+            if (activeFilters.gender && product.gender !== activeFilters.gender)
+              match = false;
+            if (activeFilters.maker && product.maker !== activeFilters.maker)
+              match = false;
+            if (
+              activeFilters.category &&
+              product.category !== activeFilters.category
+            )
+              match = false;
+            if (activeFilters.color && product.color !== activeFilters.color)
+              match = false;
+            if (
+              activeFilters.price !== null &&
+              product.price > activeFilters.price
+            )
+              match = false;
+            return match;
+          });
+          let filtersApplied = [];
+          for (let key in activeFilters) {
+            if (activeFilters[key] && key !== "price") {
+              const mapping = {
+                gender: "성별",
+                maker: "메이커",
+                category: "분류",
+                color: "색상",
+              };
+              filtersApplied.push(`${mapping[key]} (${activeFilters[key]})`);
+            }
+            if (key === "price" && activeFilters.price !== null) {
+              filtersApplied.push(`가격 (최대 ${activeFilters.price})`);
+            }
+          }
+          filterTitle.textContent =
+            filtersApplied.length > 0
+              ? filtersApplied.join(" / ")
+              : "전체 상품";
+          productGrid.innerHTML = "";
+          if (filtered.length === 0) {
+            productGrid.innerHTML = "<p>조건에 맞는 상품이 없습니다.</p>";
+            return;
+          }
+          filtered.forEach((product) => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `<h3>${product.name}</h3><p>가격: ${product.price}</p><p>메이커: ${product.maker}</p>`;
+            productGrid.appendChild(card);
+          });
+        }
+        document
+          .querySelectorAll(".category-sidebar .filter-group ul li")
+          .forEach((li) => {
+            li.addEventListener("click", function () {
+              const filterType = this.getAttribute("data-filter-type");
+              const filterValue = this.getAttribute("data-filter-value");
+              if (activeFilters[filterType] === filterValue) {
+                activeFilters[filterType] = null;
+                this.classList.remove("active");
+              } else {
+                this.parentElement
+                  .querySelectorAll("li")
+                  .forEach((sibling) => sibling.classList.remove("active"));
+                activeFilters[filterType] = filterValue;
+                this.classList.add("active");
+              }
+              renderProducts();
+            });
+          });
+        const priceRange = document.querySelector(".price-range");
+        const priceValue = document.querySelector(".price-value");
+        const priceDecrease = document.querySelector(".price-decrease");
+        const priceIncrease = document.querySelector(".price-increase");
+        function updatePriceFilter(newVal) {
+          activeFilters.price = newVal;
+          priceRange.value = newVal;
+          priceValue.textContent = newVal;
+          renderProducts();
+        }
+        priceRange.addEventListener("input", function () {
+          updatePriceFilter(Number(this.value));
+        });
+        priceDecrease.addEventListener("click", function () {
+          let newVal = Number(priceRange.value) - 10;
+          if (newVal < Number(priceRange.min)) newVal = Number(priceRange.min);
+          updatePriceFilter(newVal);
+        });
+        priceIncrease.addEventListener("click", function () {
+          let newVal = Number(priceRange.value) + 10;
+          if (newVal > Number(priceRange.max)) newVal = Number(priceRange.max);
+          updatePriceFilter(newVal);
+        });
+        renderProducts();
+        var categorySwiper = new Swiper(".category-slider", {
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+          },
+          navigation: {
+            nextEl: ".category-slider-next",
+            prevEl: ".category-slider-prev",
+          },
+        });
+      }
+      /* ---------- EVENT 페이지 스크립트 (기존 기능 복원 + grid 영역 수정) ---------- */
+      function initEventPage() {
+        // 각 이벤트 섹션 상단 슬라이더 초기화
+        document.querySelectorAll(".event-top-swiper").forEach((swiperEl) => {
+          new Swiper(swiperEl, {
+            loop: true,
+            autoplay: { delay: 3000, disableOnInteraction: false },
+            slidesPerView: 1,
+            navigation: {
+              nextEl: swiperEl.parentElement.querySelector(".event-top-next"),
+              prevEl: swiperEl.parentElement.querySelector(".event-top-prev"),
+            },
+          });
+        });
+        // 각 이벤트 섹션의 grid 영역 및 더보기 버튼 기능 초기화
+        document.querySelectorAll(".event-section").forEach((section) => {
+          section.style.overflow = "hidden";
+          const gridContainer = section.querySelector(".event-grid-container");
+          const grid = section.querySelector(".event-grid");
+          const toggleBtn = section.querySelector(".toggle-grid-btn");
+          // 더미 데이터 생성
+          const items = [];
+          for (let i = 1; i <= 50; i++) {
+            const category = ["cat1", "cat2", "cat3", "cat4"][
+              Math.floor(Math.random() * 4)
+            ];
+            items.push({
+              name: "상품 " + i,
+              price: Math.floor(Math.random() * 10000 + 1000),
+              category: category,
+            });
+          }
+          // 초기 렌더 (grid는 전체 아이템을 채우지만 container는 2행만 보임)
+          renderEventGrid(grid, items, []);
+          // toggle 버튼 이벤트
+          toggleBtn.addEventListener("click", function () {
+            if (toggleBtn.textContent.trim() === "더보기") {
+              gridContainer.style.maxHeight =
+                "calc(var(--event-row-height) * 20)";
+              toggleBtn.textContent = "닫기";
+            } else {
+              gridContainer.style.maxHeight =
+                "calc(var(--event-row-height) * 2.706)";
+              toggleBtn.textContent = "더보기";
+            }
+          });
+          // 필터 버튼 이벤트 (동일 기존)
+          section.querySelectorAll(".event-category-btn").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const row = this.parentElement;
+              row
+                .querySelectorAll(".event-category-btn")
+                .forEach((b) => b.classList.remove("active"));
+              this.classList.add("active");
+              const activeFilters = [];
+              section.querySelectorAll(".event-category-row").forEach((r) => {
+                const active = r.querySelector(".event-category-btn.active");
+                if (active && active.getAttribute("data-category") !== "all") {
+                  activeFilters.push(active.getAttribute("data-category"));
+                }
+              });
+              renderEventGrid(grid, items, activeFilters);
+            });
+          });
+        });
+      }
+      function renderEventGrid(grid, items, activeFilters) {
+        grid.innerHTML = "";
+        let filtered;
+        if (activeFilters.length === 0) {
+          filtered = items;
+        } else {
+          filtered = items.filter((item) =>
+            activeFilters.includes(item.category)
+          );
+        }
+        filtered.forEach((item) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "event-grid-item";
+          itemDiv.innerHTML = `
+            <div class="item-image"></div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price}원</div>
+          `;
+          grid.appendChild(itemDiv);
+        });
+      }
+      function initGridPagination() {
+        // placeholder: Home/Category 페이지의 pagination 기능
+      }
+      /* ---------- ALL 페이지 스크립트 (기존 유지) ---------- */
+      if (document.getElementById("all-page")) {
+        const allSearchInput = document.getElementById("all-search-input");
+        const allSearchBtn = document.getElementById("all-search-btn");
+        const allGrid = document.querySelector("#all-page .all-grid");
+        let allItems = [];
+        for (let i = 1; i <= 80; i++) {
+          allItems.push({
+            name: "상품" + i,
+            gender: i % 2 === 0 ? "남성" : "여성",
+            category: i % 2 === 0 ? "상의" : "하의",
+            price: Math.floor(Math.random() * 200) + 20,
+          });
+        }
+        function renderAllGrid(items) {
+          allGrid.innerHTML = "";
+          items.forEach((item) => {
+            const div = document.createElement("div");
+            div.className = "grid-item";
+            div.innerHTML = `<h3>${item.name}</h3><p>${item.price}원</p>`;
+            allGrid.appendChild(div);
+          });
+        }
+        renderAllGrid(allItems);
+        document
+          .querySelectorAll("#all-page .classification-buttons button")
+          .forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const type =
+                this.parentElement.parentElement.getAttribute("data-type");
+              const buttons = this.parentElement.querySelectorAll("button");
+              buttons.forEach((b) => b.classList.remove("active"));
+              this.classList.add("active");
+              applyFilters();
+            });
+          });
+        allSearchBtn.addEventListener("click", applyFilters);
+        allSearchInput.addEventListener("keyup", function (e) {
+          if (e.key === "Enter") applyFilters();
+        });
+        function applyFilters() {
+          let filtered = allItems.slice();
+          document
+            .querySelectorAll("#all-page .classification-row")
+            .forEach((row) => {
+              const type = row.getAttribute("data-type");
+              const activeBtn = row.querySelector("button.active");
+              if (activeBtn) {
+                const filterValue = activeBtn.getAttribute("data-filter");
+                if (type === "gender" && filterValue !== "전체") {
+                  filtered = filtered.filter(
+                    (item) => item.gender === filterValue
+                  );
+                }
+                if (type === "category" && filterValue !== "전체") {
+                  filtered = filtered.filter(
+                    (item) => item.category === filterValue
+                  );
+                }
+                if (type === "price") {
+                  if (filterValue === "low") {
+                    filtered = filtered.filter((item) => item.price < 80);
+                  } else if (filterValue === "mid") {
+                    filtered = filtered.filter(
+                      (item) => item.price >= 80 && item.price < 140
+                    );
+                  } else if (filterValue === "high") {
+                    filtered = filtered.filter((item) => item.price >= 140);
+                  } else if (filterValue === "all") {
+                    filtered = filtered.filter(
+                      (item) => item.price >= 0 && item.price <= 300
+                    );
+                  }
+                }
+              }
+            });
+          const searchTerm = allSearchInput.value.trim().toLowerCase();
+          if (searchTerm) {
+            filtered = filtered.filter((item) =>
+              item.name.toLowerCase().includes(searchTerm)
+            );
+          }
+          renderAllGrid(filtered);
+        }
+      }
+      window.addEventListener("load", function () {
+        const content = document.querySelector("#home-page .container.content");
+        if (content) {
+          const cards = content.querySelectorAll(".card");
+          if (window.innerWidth <= 768) {
+            cards.forEach((card) => {
+              card.style.position = "relative";
+              card.style.left = "0";
+              card.style.top = "0";
+              card.style.width = "80%";
+              card.style.margin = "20px auto";
+            });
+          } else {
+            const containerWidth = content.clientWidth;
+            const containerHeight = content.clientHeight;
+            const cardWidth = 300;
+            const cardHeight = 200;
+            const quadrants = [
+              { x: 0, y: 0, w: containerWidth / 2, h: containerHeight / 2 },
+              {
+                x: containerWidth / 2,
+                y: 0,
+                w: containerWidth / 2,
+                h: containerHeight / 2,
+              },
+              {
+                x: 0,
+                y: containerHeight / 2,
+                w: containerWidth / 2,
+                h: containerHeight / 2,
+              },
+              {
+                x: containerWidth / 2,
+                y: containerHeight / 2,
+                w: containerWidth / 2,
+                h: containerHeight / 2,
+              },
+            ];
+            cards.forEach((card, index) => {
+              const quad = quadrants[index % quadrants.length];
+              const randX = quad.x + Math.random() * (quad.w - cardWidth);
+              const randY = quad.y + Math.random() * (quad.h - cardHeight);
+              card.style.position = "absolute";
+              card.style.left = randX + "px";
+              card.style.top = randY + "px";
+            });
+          }
+          cards.forEach((card) => {
+            gsap.fromTo(
+              card,
+              { opacity: 0, y: 100 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 33%",
+                  once: true,
+                  onEnter: () => {
+                    gsap.to(card, {
+                      y: 50,
+                      duration: 2,
+                      repeat: -1,
+                      yoyo: true,
+                      ease: "sine.inOut",
+                    });
+                  },
+                },
+              }
+            );
+          });
+          initGridPagination();
+          initEventPage();
+        }
+      });
+
+      // ---------- User 모달 내 수정 기능 구현 ----------
+      document.addEventListener("DOMContentLoaded", function () {
+        // 공통 함수: 편집 모드 전환 및 저장 처리
+        document
+          .querySelectorAll("#user-modal .edit-button")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var field = btn.getAttribute("data-field");
+              if (field === "image") {
+                // 이미지의 경우, 파일 input 생성
+                var fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = "image/*";
+                fileInput.addEventListener("change", function (e) {
+                  var file = e.target.files[0];
+                  if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                      document.getElementById("user-image").src =
+                        evt.target.result;
+                      btn.textContent = "저장";
+                      btn.addEventListener(
+                        "click",
+                        function () {
+                          btn.textContent = "정보 수정";
+                          fileInput.remove();
+                        },
+                        { once: true }
+                      );
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                });
+                btn.parentNode.appendChild(fileInput);
+                btn.style.display = "none";
+              } else {
+                // 닉네임, 비밀번호 등 텍스트 필드
+                var spanEl = document.getElementById("user-" + field + "-text");
+                var originalText = spanEl.textContent;
+                var currentValue = originalText.split(":")[1].trim();
+                var inputEl = document.createElement("input");
+                inputEl.type = field === "password" ? "password" : "text";
+                inputEl.value = currentValue;
+                var saveBtn = document.createElement("button");
+                saveBtn.textContent = "저장";
+                spanEl.style.display = "none";
+                btn.style.display = "none";
+                spanEl.parentNode.appendChild(inputEl);
+                spanEl.parentNode.appendChild(saveBtn);
+                saveBtn.addEventListener("click", function () {
+                  if (inputEl.value.trim() !== "") {
+                    spanEl.textContent =
+                      field === "nickname"
+                        ? "닉네임: " + inputEl.value
+                        : "비밀번호: " + inputEl.value;
+                  }
+                  inputEl.remove();
+                  saveBtn.remove();
+                  spanEl.style.display = "inline-block";
+                  btn.style.display = "inline-block";
+                });
+              }
+            });
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+첨부된 파일은 지금까지 재작된 페이지의 코드이다.
+
+borad페이지 수정
+
+현재 board페이지의 게시글 데이터를 js에서 동적으로 일정한 값을 반복시켜 가져오고 있다. 이를 더미데이터가 아닌 슈퍼베이스에 정의된 테이블의 내용으로 가져와서 할당한다.
+
+create table boards(
+  idx int not null primary key,
+  boardKind varchar(50) default '',
+  subject varchar(200) default '',
+  writer varchar(50) default '',
+  wdate date,
+  content varchar(500) default ''
+);
+가져와야하는 테이블의 구조는 이와 같다.
+
+1. boardKind는 게시판 분류이다. 이에 맞춰서 각 게시판마다 해당하는 게시글이 작성되어야 한다.
+2. subject는 제목이다. 게시글의 제목이다.
+3. writer는 작성자이다.
+4. wdate는 작성일자이다.
+5. content는 내용이다.
+6. idx은 정렬 순서이다.
+7. 위 속성의 정보에 맞춰 게시판의 title에 맞게 출력한다.
+8. 현재 board페이지에서 동작하는 모든 기능은 유지되어야 하며 4개로 분리된 게시판은 boardKind를 기준으로 분리시킨 것이다. 이 또한 동일하게 유지되어야 한다.
+
+위 인덱스를 준수하여 페이지를 수정한다. 페이지는 spa방식으로 구현한다. 요구사항을 제작하는데 필요한 라이브러리는 cdn 방식으로 가져온다. 수정 혹은 추가가 필요한 코드를 출력하고 어디에 추가해야하는지 출력한다. 오류가 나거나 수정이 필요한 부분은 추후 다시 요구할 것이다.
