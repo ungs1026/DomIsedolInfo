@@ -33,11 +33,19 @@ watchparty 기능을 구현한다. 페이지는 watchparty.html 페이지에 구
 컬럼은 각각  watchparty_room은 idx, title, youtube_id, create_at, public으로 구성될 것이며 idx는 시퀀스, title은 제목, youtube_id는 admin페이지에서 입력한 유튜브 url에서 id값을 추출, create_at은 입력 시간, public은 공개 여부이다. comment는 idx, nickname, comment, create_at으로 구성되며 idx는 시퀀스, nickname은 닉네임, comment는 해당 닉네임 유저가 작성한 채팅, create_at은 채팅을 입력한 시간이다. sync는 idx, watchparty_room_idx, timeline, play이며 idx는 시퀀스, watchparty_room_idx은 watchparty_room의 idx값, timeline은 재생중인 유튜브 영상의 재생시간, play는 재생여부이다.
 
 다음은 기능 구현이다.
-1. spa방식으로 구현하여 목록과 출력화면은 한 페이지에서 이동된다.
+1. spa방식으로 구현하여 목록과 출력화면은 한 페이지에서 이동된다. 페이지에 접근한 경우 가장 먼저 보이는 페이지는 목록 페이지 이다.
 2. watchparty 페이지에 입장할 때 모달로 사용자가 닉네임을 입력하도록 한다. 입력했다면 이를 session에 user_nickname으로 저장한다.
 3. watchparty.html에 이동하면 목록페이지가 먼저 출력되며 상단에는 닉네임만 출력된다. 배경 색은 #9b59b6을 사용하며 이것이 대표 색이 된다.
-4. 목록은 슈퍼베이스에서 watchparty_room테이블의 목록을 출력한다. 여기서 목록 중 한가지를 클릭하는 경우 재생 페이지로 이동한다.
+4. 목록은 슈퍼베이스에서 watchparty_room테이블의 목록을 출력한다. 여기서 목록 중 한가지를 클릭하는 경우 재생 페이지로 이동한다. 재생 페이지로 이동하는 경우 해당 목록이 가지고 있는 watchparty_room 테이블의 idx값을 url에 표시한다.
 5. watchparty테이블에 저장되는 내용은 admin페이지에서만 입력 가능하게 만들것이다.
+6. 화면 전체를 이용할 것이며 좌측에는 영상 우측에는 채팅창을 만들 것이다. 비율은 css의 flex로 구분하며 일단 4 대 1 배율로 영상이 4, 채팅창을 1로 한다.
+7. 채팅창에는 하단에 채팅 입력창이 존재하며 채팅을 입력하는 경우 comment테이블에 닉네임과 comment, 그리고 작성한 날짜와 시간을 기록하는 create_at이 저장된다. 그 후 채팅창 하단단부터 오래된 것에서 최신 순으로 세로 방향으로 정렬하여 출력한다. 즉 최신 채팅이 가장 아래에 존재해야한다.
+8. 영상은 youtubeid.html에서 watchparty_room테이블에 존재하는 youtube_id를 가져와 ifraem을 동적으로 생성하여 출력한다. 여기서는 조작이 불가능하도록 하단 조작 바를 없엔다.
+9. 대신 영상 하단에 영상의 볼륨을 조정하는 프로그래스바와 영상 동기화 버튼을 생성해라.
+10. 여기서부터 주요 기능이다. watchparty에서 출력되는 영상은 admin페이지 즉 sync 테이블에 저장된 시간과 2초 이상 차이가 나는 경우 갱신시킨다. 변화가 있을 때 즉 admin 페이지에서 변화가 있을 때 watchparty페이지의 영상을 동기화시킨다. 이 때 admin페이지에서 2초 후 watchparty 페이지를 변화시킨다. 또한 차이를 신경쓰지 않고 동기화를 원하는 경우 동기화 버튼 클릭을 sync테이블의 재생시간을 통해 영상 재생 시간을 맞춘다. 이 기능만큼은 반드시 유지되어야한다.
+11. 목록페이지는 상단에 닉네임 출력, 그 아래에는 목록을 출력한다.
+
+위 요구사항을 준수하여 페이지를 생성한다. youtube영상 관련 기능은 반드시 첨부한 youtubeid.html파일에 사용된 기능을 따라서 만든다. watchparty.html를 생성하고 전체 코드를 출력한다.
 
 
 ============================================================================================================================================================
@@ -48,5 +56,9 @@ watchparty 기능을 구현한다. 페이지는 watchparty.html 페이지에 구
 컬럼은 각각  watchparty_room은 idx, title, youtube_id, create_at, public으로 구성될 것이며 idx는 시퀀스, title은 제목, youtube_id는 admin페이지에서 입력한 유튜브 url에서 id값을 추출, create_at은 입력 시간, public은 공개 여부이다. comment는 idx, nickname, comment, create_at으로 구성되며 idx는 시퀀스, nickname은 닉네임, comment는 해당 닉네임 유저가 작성한 채팅, create_at은 채팅을 입력한 시간이다. sync는 idx, watchparty_room_idx, timeline, play이며 idx는 시퀀스, watchparty_room_idx은 watchparty_room의 idx값, timeline은 재생중인 유튜브 영상의 재생시간, play는 재생여부이다.
 위와 같은 기능을 유지하기 위한 테이블 및 시퀀스, 트리거 생성 코드를 출력해라.
 
-1. watchparty_room 테이블 목록을 출력하는 공간에서는 상단에 바로 입력하는 공간을 출력한다. 상단에는 title, youtubeId, public의 입력을 받는다. 
+admin.html 페이지 기능을 아래처럼 수정해라.
+
+1. 다른 테이블 목록을 출력하는 것처럼 이번에 추가한 테이블 3개도 목록으로 출력하도록 만든다. watchparty_room 테이블 목록을 출력하는 공간에서는 상단에 바로 입력하는 공간을 출력한다. 상단에는 title, youtubeId, public의 입력을 받는다. public은 boolean타입으로 받아야 한다.
 2. youtubeId를 입력받는 칸은 첨부한 youtubeId.html파일의 기능 중 url에서 youtubeId를 추출하여 iframe을 동적으로 생성하여 출력하는 방식을 사용한다. watchparty_room 테이블의 youtube_id컬럼에는 추출한 youtubeId값을 저장한다. 하지만 목록내용을 출력할 때에는 youtubeId값을 가지고 ifreame을 동적으로 생성하는 방식으로 목록에서 영상이 출력되도록 한다.
+
+위 요구사항을 준수하여 페이지를 수정한다. youtube영상 관련 기능은 반드시 첨부한 youtubeid.html파일에 사용된 기능을 따라서 만든다. admin.html페이지를 수정하고 전체 코드를 출력한다. 또한 위에 선언한 3개의 테이블을 생성하는 sql 코드도 따로 출력한다. 현재 admin.html에 존재하는 코드는 그대로 유지한다.
