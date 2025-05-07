@@ -1,0 +1,52 @@
+와치파티
+
+테이블 : watchparty / comment / sync
+- watchparty_room = 호스트가 만든 방
+	idx, title, youtubeid, create_at, public
+- comment = 호스트가 만든 방에서 작성한 댓글 저장
+	idx, nickname, comment, create_at
+- sync = 호스트가 연결한 영상의 재생시간을 저장
+	idx, watchparty_room_idx, timeline, play
+
+-> 호스트가 url을 입력하여 youtubeid를 저장한 후 그곳에서 작성한 댓글을 저장
+  admin 페이지 영상 재생 시간은 1초단위로 업데이트 하여 sync 테이블에 저장
+ watchparty에서 출력되는 영상은 admin페이지 즉 sync 테이블에 저장된 시간과 2초 이상 차이가 나는 경우 갱신시킨다. 변화가 있을 때 즉 admin 페이지에서 변화가 있을 때 watchparty페이지의 영상을 동기화시킨다. 이 때 admin페이지에서 2초 후 watchparty 페이지를 변화시킨다.
+또한 차이를 신경쓰지 않고 동기화를 원하는 경우 동기화 버튼 클릭을 sync테이블의 재생시간을 통해 영상 재생 시간을 맞춘다.
+
+1. main페이지 프로필 좌측에 watchparty 버튼 추가
+2. 페이지 이동 (mpa) => 목록 출력
+3. 목록에서 하나를 클릭하면 닉네임 입력(모달) 후 방 입장 => 닉네임은 session에 저장한다.
+4. admin페이지에서 작성한 영상 출력 및 우측 채팅 가능
+4-1. 채팅 기능은 db에 저장된 댓글을 역순으로 출력하는 것 즉 최신이 제일 하단에 존재
+
+주의할 점
+1. 영상은 모두가 같은 부분을 보고 있어야 한다. 
+2. 닉네임은 중복이 불가능하다
+3. admin 페이지에서는 영상 조정이 가능해야 하지만 watchparty 페이지에서는 음량만 조절 가능해야한다.=> 음량 조절을 화면 밖으로 뺀 다음 화면에는 앞에 div로 감싸 조작을 막는다. 영상 조작 하단 바를 없엔다.
+
+youtubeid 저장 및 불러오는 방법은 기존에 사용하던 iframe을 동적으로 작성하여 출력하는 방향으로
+
+============================================================================================================================================================
+watchparty 기능을 구현한다. 페이지는 watchparty.html 페이지에 구현하며 html, css, js는 한 파일에 구성된다. db는 슈퍼베이스를 사용할 것이다.
+
+테이블은 watchparty_room, comment_list, sync 이렇게 3개로 구성될 것이다. 
+컬럼은 각각  watchparty_room은 idx, title, youtube_id, create_at, public으로 구성될 것이며 idx는 시퀀스, title은 제목, youtube_id는 admin페이지에서 입력한 유튜브 url에서 id값을 추출, create_at은 입력 시간, public은 공개 여부이다. comment는 idx, nickname, comment, create_at으로 구성되며 idx는 시퀀스, nickname은 닉네임, comment는 해당 닉네임 유저가 작성한 채팅, create_at은 채팅을 입력한 시간이다. sync는 idx, watchparty_room_idx, timeline, play이며 idx는 시퀀스, watchparty_room_idx은 watchparty_room의 idx값, timeline은 재생중인 유튜브 영상의 재생시간, play는 재생여부이다.
+
+다음은 기능 구현이다.
+1. spa방식으로 구현하여 목록과 출력화면은 한 페이지에서 이동된다.
+2. watchparty 페이지에 입장할 때 모달로 사용자가 닉네임을 입력하도록 한다. 입력했다면 이를 session에 user_nickname으로 저장한다.
+3. watchparty.html에 이동하면 목록페이지가 먼저 출력되며 상단에는 닉네임만 출력된다. 배경 색은 #9b59b6을 사용하며 이것이 대표 색이 된다.
+4. 목록은 슈퍼베이스에서 watchparty_room테이블의 목록을 출력한다. 여기서 목록 중 한가지를 클릭하는 경우 재생 페이지로 이동한다.
+5. watchparty테이블에 저장되는 내용은 admin페이지에서만 입력 가능하게 만들것이다.
+
+
+============================================================================================================================================================
+
+첨부된 admin.html 파일은 admin페이지의 전체 코드이다. admin페이지를 수정한다.
+
+테이블은 watchparty_room, comment_list, sync 이렇게 3개로 구성될 것이다. 
+컬럼은 각각  watchparty_room은 idx, title, youtube_id, create_at, public으로 구성될 것이며 idx는 시퀀스, title은 제목, youtube_id는 admin페이지에서 입력한 유튜브 url에서 id값을 추출, create_at은 입력 시간, public은 공개 여부이다. comment는 idx, nickname, comment, create_at으로 구성되며 idx는 시퀀스, nickname은 닉네임, comment는 해당 닉네임 유저가 작성한 채팅, create_at은 채팅을 입력한 시간이다. sync는 idx, watchparty_room_idx, timeline, play이며 idx는 시퀀스, watchparty_room_idx은 watchparty_room의 idx값, timeline은 재생중인 유튜브 영상의 재생시간, play는 재생여부이다.
+위와 같은 기능을 유지하기 위한 테이블 및 시퀀스, 트리거 생성 코드를 출력해라.
+
+1. watchparty_room 테이블 목록을 출력하는 공간에서는 상단에 바로 입력하는 공간을 출력한다. 상단에는 title, youtubeId, public의 입력을 받는다. 
+2. youtubeId를 입력받는 칸은 첨부한 youtubeId.html파일의 기능 중 url에서 youtubeId를 추출하여 iframe을 동적으로 생성하여 출력하는 방식을 사용한다. watchparty_room 테이블의 youtube_id컬럼에는 추출한 youtubeId값을 저장한다. 하지만 목록내용을 출력할 때에는 youtubeId값을 가지고 ifreame을 동적으로 생성하는 방식으로 목록에서 영상이 출력되도록 한다.
