@@ -1,840 +1,936 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Admin 페이지</title>
     <script src="https://unpkg.com/vue@3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>  
     <style>
-        :root { --main-color: #9b59b6; }
-        /* 기본 스타일 초기화 및 폰트 설정 */ 
-        body { margin: 0; font-family: Arial, sans-serif; background-color: black; color: white; } 
-        /* 로그인/회원가입 페이지 스타일 */ 
-        .auth-container { max-width: 400px; margin: 100px auto; background: black; 
-            padding: 30px; border: 1px solid var(--main-color); border-radius: 4px; 
-            text-align: center; box-shadow: 0 0 20px rgb(175, 47, 234); } 
-        .auth-container input { width: calc(100% - 20px); padding: 8px 10px; margin: 10px 0; font-size: 16px;
-            color: white; background-color: black; border: 3px solid var(--main-color);} 
-        .auth-container button { padding: 10px 15px; font-size: 16px; margin: 10px 5px; font-weight: bold;
-            cursor: pointer; background-color: black; color: white; border: 3px solid var(--main-color);} 
-        .dup-check-btn { margin-left: 5px; padding: 8px 12px; font-size: 14px; } 
-        /* 좌측 사이드바 */ 
-        .sidebar { position: fixed; top: 0; left: 0; width: 200px; height: 100vh; 
-            background-color: #000; color: #fff; overflow-y: auto; padding: 10px; 
-            z-index: 100; display: flex; flex-direction: column; justify-content: space-between; 
-            border-right: 2px solid var(--main-color); box-shadow: 10px 0 10px rgba(255, 255, 255, 0.3); } 
-        .table-list { flex-grow: 1; } 
-        .table-button { display: block; width: 100%; padding: 8px; margin-bottom: 10px; background-color: #333; border: none; color: #fff; text-align: left; cursor: pointer; } 
-        .table-button:hover { background-color: #555; } 
-        .logout-button { padding: 10px; background-color: #dc3545; border: none; color: #fff; width: 100%; cursor: pointer; margin-top: 10px; } 
-        /* 우측 콘텐츠 영역 */ 
-        .content { margin-left: 220px; padding: 20px; position: relative; } 
-        .plus-button { position: absolute; top: 20px; right: 20px; padding: 10px 15px; background-color: var(--main-color); color: #fff; border: none; cursor: pointer; font-size: 18px; } 
-        table { width: 100%; border-collapse: collapse; } 
-        thead th { background: var(--main-color); padding: 10px; border: 1px solid #ccc; } 
-        tbody td { padding: 8px; border: 1px solid #ccc; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;} 
-        .action-button { margin: 0 3px; padding: 5px 10px; border: none; cursor: pointer; } 
-        .edit-button { background-color: #007bff; color: #fff; } 
-        .delete-button { background-color: #dc3545; color: #fff; } 
-        .pagination { margin-top: 15px; text-align: center; } 
-        .pagination button { margin: 0 10px; padding: 5px 10px; cursor: pointer; color: white; } 
-        /* 수정폼 스타일 */ 
-        .edit-form { max-width: 600px; margin: auto; position: relative; } 
-        .edit-form table { width: 100%; } 
-        .edit-form td { padding: 5px; vertical-align: top;  } 
-        .edit-form input { width: 100%; padding: 5px; box-sizing: border-box; } 
-        .edit-form textarea { width: 100%; padding: 5px; box-sizing: border-box; resize: vertical; } 
-        .save-button, .list-button { margin-top: 15px; padding: 10px 15px; border: none; cursor: pointer; font-size: 16px; display: inline-block; width: 48%; } 
-        .save-button { background-color: blue; color: #fff; } 
-        .list-button { background-color: gray; color: #fff; margin-right: 4%; } 
-        /* 전체삭제 버튼 (수정페이지 우측 상단) */ 
-        .delete-all-button { position: absolute; right: 0; padding: 10px 15px; 
-            background-color: red; color: #fff; border: none; cursor: pointer; font-size: 16px; } 
-        /* 파일 미리보기 */ 
-        .img-preview { max-width: 100px; margin-top: 10px; }
-        .audio-preview { margin-top: 10px; width: 100%; }
-        /* YouTube 관련 스타일 */
-        .youtube-input { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-        .youtube-input input { flex: 1; padding: 0.5rem; }
-        .youtube-input button { padding: 0.5rem 1rem; }
-        .player { margin-top: 1rem; text-align: center; }
+      :root { --main-color: #9b59b6; }
+      /* 기본 스타일 초기화 및 폰트 설정 */
+      body { margin: 0; font-family: Arial, sans-serif; background-color: black; color: white; }
+      /* 로그인/회원가입 페이지 스타일 */
+      .auth-container { max-width: 400px; margin: 100px auto; background: black; padding: 30px; border: 1px solid var(--main-color); border-radius: 4px; text-align: center; box-shadow: 0 0 20px rgb(175, 47, 234); }
+      .auth-container input { width: calc(100% - 20px); padding: 8px 10px; margin: 10px 0; font-size: 16px; color: white; background-color: black; border: 3px solid var(--main-color); }
+      .auth-container button { padding: 10px 15px; font-size: 16px; margin: 10px 5px; font-weight: bold; cursor: pointer; background-color: black; color: white; border: 3px solid var(--main-color); }
+      .dup-check-btn { margin-left: 5px; padding: 8px 12px; font-size: 14px; }
+      /* 좌측 사이드바 */
+      .sidebar { position: fixed; top: 0; left: 0; width: 200px; height: 100vh; background-color: #000; color: #fff; overflow-y: auto; padding: 10px; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; border-right: 2px solid var(--main-color); box-shadow: 10px 0 10px rgba(255, 255, 255, 0.3); }
+      .table-list { flex-grow: 1; }
+      .table-button { display: block; width: 100%; padding: 8px; margin-bottom: 10px; background-color: #333; border: none; color: #fff; text-align: left; cursor: pointer; }
+      .table-button:hover { background-color: #555; }
+      .logout-button { padding: 10px; background-color: #dc3545; border: none; color: #fff; width: 100%; cursor: pointer; margin-top: 10px; }
+      /* 우측 콘텐츠 영역 */
+      .content { margin-left: 220px; padding: 20px; position: relative; }
+      .plus-button { position: absolute; top: 20px; right: 20px; padding: 10px 15px; background-color: var(--main-color); color: #fff; border: none; cursor: pointer; font-size: 18px; }
+      table { width: 100%; border-collapse: collapse; }
+      thead th { background: var(--main-color); padding: 10px; border: 1px solid #ccc; }
+      tbody td { padding: 8px; border: 1px solid #ccc; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .action-button { margin: 0 3px; padding: 5px 10px; border: none; cursor: pointer; }
+      .edit-button { background-color: #007bff; color: #fff; }
+      .delete-button { background-color: #dc3545; color: #fff; }
+      .pagination { margin-top: 15px; text-align: center; }
+      .pagination button { margin: 0 10px; padding: 5px 10px; cursor: pointer; color: white; }
+      /* 수정폼 스타일 */
+      .edit-form { max-width: 600px; margin: auto; position: relative; }
+      .edit-form table { width: 100%; }
+      .edit-form td { padding: 5px; vertical-align: top; }
+      .edit-form input { width: 100%; padding: 5px; box-sizing: border-box; }
+      .edit-form textarea { width: 100%; padding: 5px; box-sizing: border-box; resize: vertical; }
+      .save-button,
+      .list-button { margin-top: 15px; padding: 10px 15px; border: none; cursor: pointer; font-size: 16px; display: inline-block; width: 48%; }
+      .save-button { background-color: blue; color: #fff; }
+      .list-button { background-color: gray; color: #fff; margin-right: 4%; }
+      /* 전체삭제 버튼 (수정페이지 우측 상단) */
+      .delete-all-button { position: absolute; right: 0; padding: 10px 15px; background-color: red; color: #fff; border: none; cursor: pointer; font-size: 16px; }
+      /* 파일 미리보기 */
+      .img-preview { max-width: 100px; margin-top: 10px; }
+      .audio-preview { margin-top: 10px; width: 100%; }
+      /* YouTube 관련 스타일 */
+      .youtube-input { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+      .youtube-input input { flex: 1; padding: 0.5rem; }
+      .youtube-input button { padding: 0.5rem 1rem; }
+      .player { margin-top: 1rem; text-align: center; }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="app">
-        <!-- 로그인 페이지 -->
-        <div v-if="currentView === 'login'" class="auth-container">
-            <h2>LOGIN</h2>
-            <div>
-                <input type="text" v-model="loginId" placeholder="EMAIL" />
-            </div>
-            <div>
-                <input type="password" v-model="loginPw" placeholder="PASSWORD" />
-            </div>
-            <div>
-                <button @click="loginUser">Login</button>
-                <button @click="goToSignup">Join</button>
-            </div>
+      <!-- 로그인 페이지 -->
+      <div v-if="currentView === 'login'" class="auth-container">
+        <h2>LOGIN</h2>
+        <div>
+          <input type="text" v-model="loginId" placeholder="EMAIL" />
         </div>
-
-        <!-- 회원가입 페이지 -->
-        <div v-if="currentView === 'signup'" class="auth-container">
-            <h2>회원가입</h2>
-            <div style="text-align: left">
-                <label>이메일</label>
-                <div style="display: flex; align-items: center">
-                    <input type="text" v-model="signupEmail" placeholder="이메일" />
-                </div>
-            </div>
-            <div>
-                <input type="password" v-model="signupPw" placeholder="비밀번호" />
-            </div>
-            <div>
-                <button @click="signupUser">회원가입</button>
-                <button @click="goToLogin">취소</button>
-            </div>
+        <div>
+          <input type="password" v-model="loginPw" placeholder="PASSWORD" />
         </div>
+        <div>
+          <button @click="loginUser">Login</button>
+          <button @click="goToSignup">Join</button>
+        </div>
+      </div>
 
-        <!-- 리스트 페이지 -->
-        <div v-if="currentView === 'list' && isLoggedIn">
-            <!-- 좌측 사이드바 -->
-            <div class="sidebar">
-                <div class="table-list">
-                    <span style="display: block; margin-bottom: 15px">
-                        LOGIN<br />{{ userEmail }}
-                    </span>
-                    <h3>테이블 목록</h3>
-                    <div v-for="table in tables" :key="table">
-                        <button class="table-button" @click="selectTable(table)">
-                            {{ table }}
-                        </button>
-                    </div>
-                    <button class="logout-button" @click="logoutUser">LogOut</button>
-                </div>
+      <!-- 회원가입 페이지 -->
+      <div v-if="currentView === 'signup'" class="auth-container">
+        <h2>회원가입</h2>
+        <div style="text-align: left">
+          <label>이메일</label>
+          <div style="display: flex; align-items: center">
+            <input type="text" v-model="signupEmail" placeholder="이메일" />
+          </div>
+        </div>
+        <div>
+          <input type="password" v-model="signupPw" placeholder="비밀번호" />
+        </div>
+        <div>
+          <button @click="signupUser">회원가입</button>
+          <button @click="goToLogin">취소</button>
+        </div>
+      </div>
+
+      <!-- 리스트 페이지 -->
+      <div v-if="currentView === 'list' && isLoggedIn">
+        <!-- 좌측 사이드바 -->
+        <div class="sidebar">
+          <div class="table-list">
+            <span style="display: block; margin-bottom: 15px">
+              LOGIN<br />{{ userEmail }}
+            </span>
+            <h3>테이블 목록</h3>
+            <div v-for="table in tables" :key="table">
+              <button class="table-button" @click="selectTable(table)">
+                {{ table }}
+              </button>
             </div>
-            <!-- 우측 리스트 콘텐츠 -->
-            <div class="content">
-                <button class="plus-button" @click="newRow">+</button>
-                <div v-if="selectedTable === 'watchparty_room'">
-                    <h2>Watch Party Room - 데이터</h2>
-                    <!-- watchparty_room 테이블에 대한 입력 폼 -->
-                    <div class="youtube-input">
-                        <input type="text" v-model="newRoom.title" placeholder="Title" />
-                        <input type="text" v-model="newRoom.youtubeUrl" placeholder="YouTube URL" />
-                        <label>
-                            <input type="checkbox" v-model="newRoom.public" /> Public
-                        </label>
-                        <button @click="addWatchPartyRoom">Add Room</button>
+            <button class="logout-button" @click="logoutUser">LogOut</button>
+          </div>
+        </div>
+        <!-- 우측 리스트 콘텐츠 -->
+        <div class="content">
+          <button class="plus-button" @click="newRow">+</button>
+          <div v-if="selectedTable === 'watchparty_room'">
+            <h2>Watch Party Room - 데이터</h2>
+            <!-- watchparty_room 테이블에 대한 입력 폼 -->
+            <div class="youtube-input">
+              <input type="text" v-model="newRoom.title" placeholder="Title" />
+              <input
+                type="text"
+                v-model="newRoom.youtubeUrl"
+                placeholder="YouTube URL"
+              />
+              <label>
+                <input type="checkbox" v-model="newRoom.public" /> Public
+              </label>
+              <button @click="addWatchPartyRoom">Add Room</button>
+            </div>
+            <div class="player" v-if="newRoom.youtubeId">
+              <div id="player"></div>
+            </div>
+            <table v-if="tableData.length > 0">
+              <thead>
+                <tr>
+                  <th v-for="col in tableColumns" :key="col">{{ col }}</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, index) in tableData" :key="row.idx || index">
+                  <td v-for="col in tableColumns" :key="col">
+                    <template v-if="col === 'youtube_id'">
+                      <div :id="'player-' + row.idx"></div>
+                    </template>
+                    <template v-else> {{ row[col] }} </template>
+                  </td>
+                  <td>
+                    <button
+                      class="action-button edit-button"
+                      @click="goToEdit(row, false)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="action-button delete-button"
+                      @click="deleteRow(row)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else>
+              <p>데이터가 없습니다.</p>
+            </div>
+            <!-- 페이지네이션 -->
+            <div class="pagination">
+              <button @click="prevPage" :disabled="currentPage === 1">
+                Prev
+              </button>
+              <span>{{ currentPage }} / {{ totalPages }}</span>
+              <button @click="nextPage" :disabled="currentPage === totalPages">
+                Next
+              </button>
+            </div>
+          </div>
+          <div v-else-if="selectedTable">
+            <h2>{{ selectedTable }} - 데이터</h2>
+            <table v-if="tableData.length > 0">
+              <thead>
+                <tr>
+                  <th v-for="col in tableColumns" :key="col">{{ col }}</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(row, index) in tableData"
+                  :key="row[primaryKey] || index"
+                >
+                  <td
+                    v-for="col in tableColumns"
+                    :key="col"
+                    :class="{ 'content-field': col === 'content' && selectedTable === 'boards' }"
+                    v-html="row[col]"
+                  ></td>
+                  <td>
+                    <button
+                      class="action-button edit-button"
+                      @click="goToEdit(row, false)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="action-button delete-button"
+                      @click="deleteRow(row)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else>
+              <p>데이터가 없습니다.</p>
+            </div>
+            <!-- 페이지네이션 -->
+            <div class="pagination">
+              <button @click="prevPage" :disabled="currentPage === 1">
+                Prev
+              </button>
+              <span>{{ currentPage }} / {{ totalPages }}</span>
+              <button @click="nextPage" :disabled="currentPage === totalPages">
+                Next
+              </button>
+            </div>
+          </div>
+          <div v-else>
+            <h2>테이블을 선택하세요.</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- 수정/추가 페이지 -->
+      <div v-if="currentView === 'edit' && isLoggedIn" class="content">
+        <div class="edit-form">
+          <!-- 전체삭제 버튼: 현재 테이블의 모든 행을 삭제 -->
+          <button class="delete-all-button" @click="deleteAllRows">
+            전체삭제
+          </button>
+          <h2>
+            {{ isNew ? "새로운 row 추가" : "데이터 수정" }} - {{ selectedTable
+            }}
+          </h2>
+          <table>
+            <tbody>
+              <tr v-for="(value, key) in editRowData" :key="key">
+                <td><strong>{{ key }}</strong></td>
+                <td>
+                  <!-- YouTube URL 입력 (watchparty_room의 youtube_id) -->
+                  <template
+                    v-if="selectedTable === 'watchparty_room' && key === 'youtube_id'"
+                  >
+                    <input
+                      type="text"
+                      v-model="youtubeUrl"
+                      placeholder="YouTube URL"
+                      @input="extractYoutubeId"
+                    />
+                    <div v-if="editRowData[key]">
+                      <div :id="'edit-player'"></div>
                     </div>
-                    <div class="player" v-if="newRoom.youtubeId">
-                        <div id="player"></div>
+                  </template>
+                  <!-- 파일 입력: thumbnail, img, mp3file 컬럼인 경우 -->
+                  <template
+                    v-else-if="key === 'img' || key === 'thumbnail' || (selectedTable==='songs' && key==='mp3file')"
+                  >
+                    <input
+                      type="file"
+                      @change="handleFileChange($event, key)"
+                      :accept="key==='thumbnail'
+                                          ? 'image/jpeg,image/png,image/webp'
+                                          : key==='img'
+                                            ? 'image/*'
+                                            : (key==='mp3file'
+                                                ? (isNew ? '.mp3,.flac' : '.mp3')
+                                                : '')"
+                    />
+                    <div v-if="filePreviews[key]">
+                      <template v-if="key==='mp3file'">
+                        <audio
+                          :src="filePreviews[key]"
+                          controls
+                          class="audio-preview"
+                        ></audio>
+                      </template>
+                      <template v-else>
+                        <img
+                          :src="filePreviews[key]"
+                          alt="Preview"
+                          class="img-preview"
+                        />
+                      </template>
                     </div>
-                    <table v-if="tableData.length > 0">
-                        <thead>
-                            <tr>
-                                <th v-for="col in tableColumns" :key="col">{{ col }}</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(row, index) in tableData" :key="row.idx || index">
-                                <td v-for="col in tableColumns" :key="col">
-                                    <template v-if="col === 'youtube_id'">
-                                        <div :id="'player-' + row.idx"></div>
-                                    </template>
-                                    <template v-else>
-                                        {{ row[col] }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <button class="action-button edit-button" @click="goToEdit(row, false)">Edit</button>
-                                    <button class="action-button delete-button" @click="deleteRow(row)">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                     <div v-else>
-                        <p>데이터가 없습니다.</p>
+                      <span>(현재 파일: {{ value }})</span>
                     </div>
-                    <!-- 페이지네이션 -->
-                    <div class="pagination">
-                        <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
-                        <span>{{ currentPage }} / {{ totalPages }}</span>
-                        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-                    </div>
-                </div>
-                <div v-else-if="selectedTable">
-                    <h2>{{ selectedTable }} - 데이터</h2>
-                    <table v-if="tableData.length > 0">
-                        <thead>
-                            <tr>
-                                <th v-for="col in tableColumns" :key="col">{{ col }}</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(row, index) in tableData" :key="row[primaryKey] || index">
-                                <td v-for="col in tableColumns" :key="col" :class="{ 'content-field': col === 'content' && selectedTable === 'boards' }" v-html="row[col]"></td>
-                                <td>
-                                    <button class="action-button edit-button" @click="goToEdit(row, false)">Edit</button>
-                                    <button class="action-button delete-button" @click="deleteRow(row)">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div v-else>
-                        <p>데이터가 없습니다.</p>
-                    </div>
-                    <!-- 페이지네이션 -->
-                    <div class="pagination">
-                        <button @click="prevPage" :disabled="currentPage === 1">Prev</button>
-                        <span>{{ currentPage }} / {{ totalPages }}</span>
-                        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-                    </div>
-                </div>
-                <div v-else>
-                    <h2>테이블을 선택하세요.</h2>
-                </div>
-            </div>
+                  </template>
+                  <!-- 만약 boards 테이블의 boardkind 컬럼이면 select 처리 -->
+                  <template
+                    v-else-if="selectedTable === 'boards' && key === 'boardkind'"
+                  >
+                    <select v-model="editRowData[key]">
+                      <option value="free">free</option>
+                      <option value="notice">notice</option>
+                      <option value="news">news</option>
+                      <option value="suggest">suggest</option>
+                    </select>
+                  </template>
+                  <!-- 만약 boards 테이블의 content 컬럼이면 textarea 처리 -->
+                  <template
+                    v-else-if="selectedTable === 'boards' && key === 'content'"
+                  >
+                    <textarea v-model="editRowData[key]" rows="5"></textarea>
+                  </template>
+                  <!-- 그 외의 컬럼 -->
+                  <template v-else>
+                    <input
+                      :type="key.toLowerCase().includes('date') ? 'date' : 'text'"
+                      v-model="editRowData[key]"
+                      :readonly="key === primaryKey"
+                    />
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button class="list-button" @click="backToList">List</button>
+            <button class="save-button" @click="saveEdit">Save</button>
+          </div>
         </div>
+      </div>
 
-        <!-- 수정/추가 페이지 -->
-        <div v-if="currentView === 'edit' && isLoggedIn" class="content">
-            <div class="edit-form">
-                <!-- 전체삭제 버튼: 현재 테이블의 모든 행을 삭제 -->
-                <button class="delete-all-button" @click="deleteAllRows">전체삭제</button>
-                <h2>
-                    {{ isNew ? "새로운 row 추가" : "데이터 수정" }} - {{ selectedTable }}
-                </h2>
-                <table>
-                    <tbody>
-                        <tr v-for="(value, key) in editRowData" :key="key">
-                            <td><strong>{{ key }}</strong></td>
-                            <td>
-                                <!-- YouTube URL 입력 (watchparty_room의 youtube_id) -->
-                                <template v-if="selectedTable === 'watchparty_room' && key === 'youtube_id'">
-                                    <input type="text" v-model="youtubeUrl" placeholder="YouTube URL" @input="extractYoutubeId" />
-                                    <div v-if="editRowData[key]">
-                                        <div :id="'edit-player'"></div>
-                                    </div>
-                                </template>
-                                <!-- 파일 입력: thumbnail, img, mp3file 컬럼인 경우 -->
-                                <template v-else-if="key === 'img' || key === 'thumbnail' || (selectedTable==='songs' && key==='mp3file')">
-                                    <input
-                                        type="file"
-                                        @change="handleFileChange($event, key)"
-                                        :accept="key==='thumbnail'
-                                            ? 'image/jpeg,image/png,image/webp'
-                                            : key==='img'
-                                              ? 'image/*'
-                                              : (key==='mp3file'
-                                                  ? (isNew ? '.mp3,.flac' : '.mp3')
-                                                  : '')"
-                                    />
-                                    <div v-if="filePreviews[key]">
-                                        <template v-if="key==='mp3file'">
-                                            <audio :src="filePreviews[key]" controls class="audio-preview"></audio>
-                                        </template>
-                                        <template v-else>
-                                            <img :src="filePreviews[key]" alt="Preview" class="img-preview" />
-                                        </template>
-                                    </div>
-                                    <div v-else>
-                                        <span>(현재 파일: {{ value }})</span>
-                                    </div>
-                                </template>
-                                <!-- 만약 boards 테이블의 boardkind 컬럼이면 select 처리 -->
-                                <template v-else-if="selectedTable === 'boards' && key === 'boardkind'">
-                                    <select v-model="editRowData[key]">
-                                        <option value="free">free</option>
-                                        <option value="notice">notice</option>
-                                        <option value="news">news</option>
-                                        <option value="suggest">suggest</option>
-                                    </select>
-                                </template>
-                                <!-- 만약 boards 테이블의 content 컬럼이면 textarea 처리 -->
-                                <template v-else-if="selectedTable === 'boards' && key === 'content'">
-                                    <textarea v-model="editRowData[key]" rows="5"></textarea>
-                                </template>
-                                <!-- 그 외의 컬럼 -->
-                                <template v-else>
-                                    <input :type="key.toLowerCase().includes('date') ? 'date' : 'text'" v-model="editRowData[key]" :readonly="key === primaryKey" />
-                                </template>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div>
-                    <button class="list-button" @click="backToList">List</button>
-                    <button class="save-button" @click="saveEdit">Save</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 로그인되지 않은 상태에서 접근 시 로그인 페이지로 리다이렉트 -->
-        <div v-if="currentView !== 'login' && currentView !== 'signup' && !isLoggedIn" class="auth-container">
-            <h2>로그인이 필요합니다.</h2>
-            <button @click="goToLogin">로그인 페이지로 이동</button>
-        </div>
+      <!-- 로그인되지 않은 상태에서 접근 시 로그인 페이지로 리다이렉트 -->
+      <div
+        v-if="currentView !== 'login' && currentView !== 'signup' && !isLoggedIn"
+        class="auth-container"
+      >
+        <h2>로그인이 필요합니다.</h2>
+        <button @click="goToLogin">로그인 페이지로 이동</button>
+      </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Supabase 설정 (본인 Supabase URL, ANON KEY로 변경)
-        const SUPABASE_URL = "https://pdwbghdbrzcaftdzjegw.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkd2JnaGRicnpjYWZ0ZHpqZWd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwNjI4NzYsImV4cCI6MjA1ODYzODg3Nn0.PS9lyc45XXnhVw52qq9TOQyYiWclxNxPwLGtSFX8VbI";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // Supabase 설정 (본인 Supabase URL, ANON KEY로 변경)
+      const SUPABASE_URL = "https://pdwbghdbrzcaftdzjegw.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkd2JnaGRicnpjYWZ0ZHpqZWd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwNjI4NzYsImV4cCI6MjA1ODYzODg3Nn0.PS9lyc45XXnhVw52qq9TOQyYiWclxNxPwLGtSFX8VbI";
+      const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
 
-        const app = Vue.createApp({
-            data() {
-                return {
-                    currentView: "login", // 초기 페이지는 로그인 페이지
-                    loginId: "",
-                    loginPw: "",
-                    signupEmail: "",
-                    signupPw: "",
-                    tables: [
-                        "sliders",
-                        "videothumbnails",
-                        "albums",
-                        "boards",
-                        "artists",
-                        "albumkinds",
-                        "songs",
-                        "playlists",
-                        "boards",
-                        "boardcomments",
-                        "watchparty_room",
-                        "comment_list",
-                        "sync"
-                    ],
-                    selectedTable: null,
-                    tableData: [],
-                    currentPage: 1,
-                    totalPages: 1,
-                    pageSize: 10,
-                    supabase: supabaseClient,
-                    editRowData: {},
-                    isNew: false,
-                    primaryKey: "idx",
-                    fileUploads: {},
-                    filePreviews: {},
-                    publicURL: "",
-                    newRoom: {
-                        title: "",
-                        youtubeUrl: "",
-                        youtubeId: "",
-                        public: false
-                    },
-                    youtubeUrl: "",
-                    userEmail: "",
-                    isLoggedIn: false, // 로그인 상태를 추적하는 변수 추가
-                    players: {}, // YouTube players
-                    syncIntervals: {} // Intervals for updating sync table
-                };
+      const app = Vue.createApp({
+        data() {
+          return {
+            currentView: "login", // 초기 페이지는 로그인 페이지
+            loginId: "",
+            loginPw: "",
+            signupEmail: "",
+            signupPw: "",
+            tables: [
+              "sliders",
+              "videothumbnails",
+              "albums",
+              "boards",
+              "artists",
+              "albumkinds",
+              "songs",
+              "playlists",
+              "boards",
+              "boardcomments",
+              "watchparty_room",
+              "comment_list",
+              "sync",
+            ],
+            selectedTable: null,
+            tableData: [],
+            currentPage: 1,
+            totalPages: 1,
+            pageSize: 10,
+            supabase: supabaseClient,
+            editRowData: {},
+            isNew: false,
+            primaryKey: "idx",
+            fileUploads: {},
+            filePreviews: {},
+            publicURL: "",
+            newRoom: {
+              title: "",
+              youtubeUrl: "",
+              youtubeId: "",
+              public: false,
             },
-            computed: {
-                tableColumns() {
-                    if (this.tableData.length > 0) {
-                        return Object.keys(this.tableData[0]);
-                    }
-                    return [];
-                },
-            },
-            methods: {
-                /* ------ 인증 관련 메서드 ------ */
-                async loginUser() {
-                    if (!this.loginId || !this.loginPw) {
-                        alert("아이디와 비밀번호를 모두 입력하세요.");
-                        return;
-                    }
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: this.loginId,
-                        password: this.loginPw,
-                    });
-                    if (error) {
-                        alert("로그인 실패: " + error.message);
-                    } else {
-                        console.log("로그인 성공. Access Token:", data.session.access_token);
-                        this.userEmail = data.user.email;
-                        this.isLoggedIn = true; // 로그인 상태로 설정
-                        this.currentView = "list";
-                        this.selectTable(this.tables[0]);
-                    }
-                },
-                goToSignup() {
-                    this.currentView = "signup";
-                    this.signupEmail = "";
-                    this.signupPw = "";
-                },
-                goToLogin() {
-                    this.currentView = "login";
-                    this.loginId = "";
-                    this.loginPw = "";
-                },
-                async signupUser() {
-                    if (!this.signupEmail || !this.signupPw) {
-                        alert("이메일과 비밀번호를 모두 입력하세요.");
-                        return;
-                    }
-                    const { error } = await supabaseClient.auth.signUp({
-                        email: this.signupEmail,
-                        password: this.signupPw,
-                    });
-                    if (error) {
-                        alert("회원가입 실패: " + error.message);
-                    } else {
-                        alert("회원가입 완료");
-                        this.currentView = "login";
-                    }
-                },
-                async logoutUser() {
-                    const { error } = await supabaseClient.auth.signOut();
-                    if (error) {
-                        console.error("로그아웃 에러:", error);
-                    } else {
-                        this.isLoggedIn = false; // 로그아웃 상태로 설정
-                        this.currentView = "login";
-                        this.loginId = "";
-                        this.loginPw = "";
-                        this.userEmail = "";
-                    }
-                },
-                async checkSession() {
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session) {
-                        this.userEmail = session.user.email;
-                        this.isLoggedIn = true; // 세션이 유효하면 로그인 상태로 설정
-                        this.currentView = "list";
-                        this.selectTable(this.tables[0]); // 첫 번째 테이블 선택
-                    } else {
-                        this.isLoggedIn = false;
-                        this.currentView = "login";
-                    }
-                },
+            youtubeUrl: "",
+            userEmail: "",
+            isLoggedIn: false, // 로그인 상태를 추적하는 변수 추가
+            players: {}, // YouTube players
+            syncIntervals: {}, // Intervals for updating sync table
+          };
+        },
+        computed: {
+          tableColumns() {
+            if (this.tableData.length > 0) {
+              return Object.keys(this.tableData[0]);
+            }
+            return [];
+          },
+        },
+        methods: {
+          /* ------ 인증 관련 메서드 ------ */
+          async loginUser() {
+            if (!this.loginId || !this.loginPw) {
+              alert("아이디와 비밀번호를 모두 입력하세요.");
+              return;
+            }
+            const { data, error } =
+              await supabaseClient.auth.signInWithPassword({
+                email: this.loginId,
+                password: this.loginPw,
+              });
+            if (error) {
+              alert("로그인 실패: " + error.message);
+            } else {
+              console.log(
+                "로그인 성공. Access Token:",
+                data.session.access_token
+              );
+              this.userEmail = data.user.email;
+              this.isLoggedIn = true; // 로그인 상태로 설정
+              this.currentView = "list";
+              this.selectTable(this.tables[0]);
+            }
+          },
+          goToSignup() {
+            this.currentView = "signup";
+            this.signupEmail = "";
+            this.signupPw = "";
+          },
+          goToLogin() {
+            this.currentView = "login";
+            this.loginId = "";
+            this.loginPw = "";
+          },
+          async signupUser() {
+            if (!this.signupEmail || !this.signupPw) {
+              alert("이메일과 비밀번호를 모두 입력하세요.");
+              return;
+            }
+            const { error } = await supabaseClient.auth.signUp({
+              email: this.signupEmail,
+              password: this.signupPw,
+            });
+            if (error) {
+              alert("회원가입 실패: " + error.message);
+            } else {
+              alert("회원가입 완료");
+              this.currentView = "login";
+            }
+          },
+          async logoutUser() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+              console.error("로그아웃 에러:", error);
+            } else {
+              this.isLoggedIn = false; // 로그아웃 상태로 설정
+              this.currentView = "login";
+              this.loginId = "";
+              this.loginPw = "";
+              this.userEmail = "";
+            }
+          },
+          async checkSession() {
+            const {
+              data: { session },
+            } = await supabaseClient.auth.getSession();
+            if (session) {
+              this.userEmail = session.user.email;
+              this.isLoggedIn = true; // 세션이 유효하면 로그인 상태로 설정
+              this.currentView = "list";
+              this.selectTable(this.tables[0]); // 첫 번째 테이블 선택
+            } else {
+              this.isLoggedIn = false;
+              this.currentView = "login";
+            }
+          },
 
-                // 테이블 선택 -> 데이터 조회
-                async selectTable(table) {
-                    this.selectedTable = table;
-                    this.currentPage = 1;
-                    await this.fetchTableDataByTable();
-                    this.currentView = "list";
-                    if (table === 'watchparty_room') {
-                        this.$nextTick(() => {
-                            this.initYouTubePlayers();
-                        });
-                    }
-                },
-                async fetchTableDataByTable() {
-                    const fromIndex = (this.currentPage - 1) * this.pageSize;
-                    let query = this.supabase
-                        .from(this.selectedTable)
-                        .select("*", { count: "exact" })
-                        .order(this.selectedTable === 'songs' ? 'artist' : this.primaryKey, { ascending: true })
-                        .order(this.primaryKey, { ascending: true })
-                        .range(fromIndex, fromIndex + this.pageSize - 1);
-                    const { data, count, error } = await query;
-                    if (error) {
-                        console.error(`${this.selectedTable} 데이터 조회 에러:`, error);
-                        this.tableData = [];
-                    } else {
-                        this.tableData = data;
-                        this.totalPages = Math.ceil(count / this.pageSize) || 1;
-                    }
-                },
-                goToEdit(row, isNew) {
-                    this.isNew = isNew;
-                    this.fileUploads = {};
-                    this.filePreviews = {};
-                    this.editRowData = JSON.parse(JSON.stringify(row));
-                    this.youtubeUrl = ""; // Reset youtubeUrl for edit
-                    this.currentView = "edit";
-                    if (this.selectedTable === 'watchparty_room' && !isNew) {
-                        this.$nextTick(() => {
-                            this.initEditYouTubePlayer();
-                        });
-                    }
-                },
-                async newRow() {
-                    if (!this.selectedTable) {
-                        alert("테이블을 먼저 선택하세요.");
-                        return;
-                    }
-                    let { data, error } = await this.supabase
-                        .from(this.selectedTable)
-                        .select(this.primaryKey, { count: "exact" })
-                        .order(this.primaryKey, { ascending: false })
-                        .limit(1);
-                    let newIdx = 1;
-                    if (error) {
-                        console.error("새 idx 계산 에러:", error);
-                    } else if (data && data.length > 0) {
-                        newIdx = data[0][this.primaryKey] + 1;
-                    }
-                    let newRow = {};
-                    if (this.tableData.length > 0) {
-                        Object.keys(this.tableData[0]).forEach((col) => {
-                            newRow[col] = col === this.primaryKey ? newIdx : "";
-                        });
-                    } else {
-                        newRow[this.primaryKey] = newIdx;
-                    }
-                    this.goToEdit(newRow, true);
-                },
-                handleFileChange(event, key) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-                    // Validation
-                    if (key === 'thumbnail' || key === 'img') {
-                        if (!file.type.startsWith('image/')) {
-                            alert('이미지 파일만 업로드할 수 있습니다.');
-                            return;
-                        }
-                    }
-                    if (key === 'mp3file') {
-                        const ext = file.name.split('.').pop().toLowerCase();
-                        if (this.isNew) {
-                            if (!['mp3','flac'].includes(ext)) {
-                                alert('mp3 또는 flac 파일만 업로드할 수 있습니다.');
-                                return;
-                            }
-                        } else {
-                            if (ext !== 'mp3') {
-                                alert('mp3 파일만 수정할 수 있습니다.');
-                                return;
-                            }
-                        }
-                    }
-                    this.fileUploads[key] = file;
-                    this.filePreviews[key] = URL.createObjectURL(file);
-                },
-                extractYoutubeId(url) {
-                    const regex = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/|live\/))([\w-]{11})/;
-                    const match = url.match(regex);
-                    return match ? match[1] : null;
-                },
-                async addWatchPartyRoom() {
-                    const youtubeId = this.extractYoutubeId(this.newRoom.youtubeUrl);
-                    if (!youtubeId) {
-                        alert('Invalid YouTube URL');
-                        return;
-                    }
-                    const newRoomData = {
-                        title: this.newRoom.title,
-                        youtube_id: youtubeId,
-                        public: this.newRoom.public
-                    };
-                    const { data, error } = await this.supabase
-                        .from('watchparty_room')
-                        .insert([newRoomData])
-                        .select();
-                    if (error) {
-                        console.error('Supabase insert error:', error);
-                        alert('Failed to add room');
-                        return;
-                    }
-                    const roomIdx = data[0].idx;
-                    // Create corresponding sync entry
-                    await this.createSyncEntry(roomIdx);
-                    this.newRoom.title = "";
-                    this.newRoom.youtubeUrl = "";
-                    this.newRoom.youtubeId = "";
-                    this.newRoom.public = false;
-                    this.fetchTableDataByTable();
-                },
-                async createSyncEntry(roomIdx) {
-                    const syncData = {
-                        watchparty_room_idx: roomIdx,
-                        timeline: 0,
-                        play: false
-                    };
-                    const { error } = await this.supabase
-                        .from('sync')
-                        .insert([syncData]);
-                    if (error) {
-                        console.error('Failed to create sync entry:', error);
-                    }
-                },
-                async updateSyncTimeline(roomIdx, timeline, play) {
-                    const { error } = await this.supabase
-                        .from('sync')
-                        .update({ timeline, play })
-                        .eq('watchparty_room_idx', roomIdx);
-                    if (error) {
-                        console.error('Failed to update sync timeline:', error);
-                    }
-                },
-                initYouTubePlayers() {
-                    this.tableData.forEach(row => {
-                        const playerId = `player-${row.idx}`;
-                        const player = new YT.Player(playerId, {
-                            height: '157',
-                            width: '280',
-                            videoId: row.youtube_id,
-                            events: {
-                                'onReady': event => {
-                                    this.players[row.idx] = event.target;
-                                },
-                                'onStateChange': event => {
-                                    this.handlePlayerStateChange(row.idx, event.data);
-                                }
-                            }
-                        });
-                    });
-                },
-                initEditYouTubePlayer() {
-                    if (this.editRowData.youtube_id) {
-                        const player = new YT.Player('edit-player', {
-                            height: '157',
-                            width: '280',
-                            videoId: this.editRowData.youtube_id,
-                            events: {
-                                'onReady': event => {
-                                    this.players['edit'] = event.target;
-                                },
-                                'onStateChange': event => {
-                                    this.handlePlayerStateChange('edit', event.data);
-                                }
-                            }
-                        });
-                    }
-                },
-                handlePlayerStateChange(roomIdx, state) {
-                    if (state === YT.PlayerState.PLAYING) {
-                        this.startSyncInterval(roomIdx);
-                    } else {
-                        this.stopSyncInterval(roomIdx);
-                    }
-                    if (roomIdx !== 'edit') {
-                        this.updateSyncTimeline(roomIdx, this.players[roomIdx].getCurrentTime(), state === YT.PlayerState.PLAYING);
-                    }
-                },
-                startSyncInterval(roomIdx) {
-                    if (this.syncIntervals[roomIdx]) {
-                        clearInterval(this.syncIntervals[roomIdx]);
-                    }
-                    this.syncIntervals[roomIdx] = setInterval(() => {
-                        if (this.players[roomIdx]) {
-                            const currentTime = this.players[roomIdx].getCurrentTime();
-                            this.updateSyncTimeline(roomIdx, currentTime, true);
-                        }
-                    }, 1000);
-                },
-                stopSyncInterval(roomIdx) {
-                    if (this.syncIntervals[roomIdx]) {
-                        clearInterval(this.syncIntervals[roomIdx]);
-                        delete this.syncIntervals[roomIdx];
-                    }
-                },
-                async saveEdit() {
-                    if (!this.selectedTable) return;
-
-                    // YouTube ID 처리
-                    if (this.selectedTable === 'watchparty_room' && this.youtubeUrl) {
-                        const youtubeId = this.extractYoutubeId(this.youtubeUrl);
-                        if (youtubeId) {
-                            this.editRowData.youtube_id = youtubeId;
-                        }
-                    }
-
-                    // 파일 처리
-                    for (let key in this.editRowData) {
-                        // ─── songs 테이블 mp3file 처리 ───
-                        if (this.selectedTable === 'songs' && key === 'mp3file' && this.fileUploads[key]) {
-                            const file = this.fileUploads[key];
-                            const fileName = file.name;
-                            const folder = 'mp3';
-                            const filePath = `${folder}/${fileName}`;
-
-                            // 새 MP3 업로드
-                            const { data: uploadData, error: uploadErr } = await this.supabase
-                                .storage
-                                .from('songs')
-                                .upload(filePath, file, { upsert: true });
-                            if (uploadErr) {
-                                console.error('MP3 업로드 에러:', uploadErr.message);
-                                alert('MP3 파일 업로드 실패: ' + uploadErr.message);
-                                return;
-                            }
-
-                            // Public URL 가져오기
-                            const { data: urlData, error: urlErr } = await this.supabase
-                                .storage
-                                .from('songs')
-                                .getPublicUrl(filePath);
-                            if (urlErr) {
-                                console.error('MP3 URL 생성 에러:', urlErr.message);
-                                alert('MP3 URL 생성 실패: ' + urlErr.message);
-                            } else {
-                                this.editRowData[key] = urlData.publicUrl;
-                            }
-                            continue;
-                        }
-
-                        // ─── img / thumbnail 처리 ───
-                        if ((key === 'img' || key === 'thumbnail') && this.fileUploads[key]) {
-                            const file = this.fileUploads[key];
-                            const currentURL = this.editRowData[key];
-                            const fileName = file.name;
-                            const folder = key === 'thumbnail' ? 'thumbnail' : '';
-                            const filePath = folder ? `${folder}/${fileName}` : fileName;
-
-                            // 기존 파일 삭제
-                            if (currentURL) {
-                                const { error: removeError } = await this.supabase.storage
-                                    .from(this.selectedTable)
-                                    .remove([filePath]);
-                                if (removeError && removeError.status !== 404) {
-                                    console.error(`${key} 기존 파일 삭제 에러:`, removeError);
-                                }
-                            }
-
-                            // 새 파일 업로드
-                            const { error: uploadError } = await this.supabase.storage
-                                .from(this.selectedTable)
-                                .upload(filePath, file, { upsert: true });
-                            if (uploadError) {
-                                console.error(`${key} 새 파일 업로드 에러:`, uploadError);
-                            } else {
-                                // URL 가져오기
-                                const { data: publicURLData, error: urlError } = await this.supabase.storage
-                                    .from(this.selectedTable)
-                                    .getPublicUrl(filePath);
-                                if (urlError) {
-                                    console.error(`${key} URL 생성 에러:`, urlError);
-                                } else {
-                                    this.editRowData[key] = publicURLData.publicUrl;
-                                }
-                            }
-                        }
-                    }
-
-                    // 데이터 저장 (신규/수정)
-                    if (this.isNew) {
-                        const { data, error } = await this.supabase
-                            .from(this.selectedTable)
-                            .insert([this.editRowData])
-                            .select();
-                        if (error) {
-                            console.error('새 row 삽입 에러:', error);
-                        } else {
-                            alert('추가되었습니다.');
-                            if (this.selectedTable === 'watchparty_room') {
-                                const roomIdx = data[0].idx;
-                                await this.createSyncEntry(roomIdx);
-                            }
-                        }
-                    } else {
-                        const { error } = await this.supabase
-                            .from(this.selectedTable)
-                            .update(this.editRowData)
-                            .eq(this.primaryKey, this.editRowData[this.primaryKey]);
-                        if (error) {
-                            console.error('row 수정 에러:', error);
-                        } else {
-                            alert('수정되었습니다.');
-                        }
-                    }
-                    this.currentView = 'list';
-                    this.fetchTableDataByTable();
-                },
-                backToList() {
-                    this.currentView = "list";
-                    this.editRowData = {};
-                    this.fileUploads = {};
-                    this.filePreviews = {};
-                },
-                async deleteRow(row) {
-                    if (!this.selectedTable) return;
-                    if (confirm("해당 row를 삭제하시겠습니까?")) {
-                        const fileKeys = ["img", "thumbnail"];
-                        for (let key of fileKeys) {
-                            if (row[key]) {
-                                let fileName = row[key].substring(row[key].lastIndexOf("/") + 1);
-                                let filePath = fileName;
-                                let { error: fileDelError } = await this.supabase.storage
-                                    .from(this.selectedTable)
-                                    .remove([filePath]);
-                                if (fileDelError && fileDelError.status !== 404) {
-                                    console.error(`${key} 파일 삭제 에러:`, fileDelError);
-                                }
-                            }
-                        }
-                        const { error } = await this.supabase
-                            .from(this.selectedTable)
-                            .delete()
-                            .eq(this.primaryKey, row[this.primaryKey]);
-                        if (error) {
-                            console.error("row 삭제 에러:", error);
-                        } else {
-                            this.fetchTableDataByTable();
-                        }
-                    }
-                },
-                async deleteAllRows() {
-                    if (!this.selectedTable) return;
-                    if (confirm("정말 모든 행을 삭제하시겠습니까?")) {
-                        if (this.tableColumns && this.tableColumns.includes("img")) {
-                            let { data: allData, error } = await this.supabase
-                                .from(this.selectedTable)
-                                .select("img");
-                            if (error) {
-                                console.error("전체 삭제 이미지 데이터 조회 에러:", error);
-                            } else {
-                                let filePaths = [];
-                                allData.forEach((row) => {
-                                    if (row.img) {
-                                        let fileName = row.img.substring(row.img.lastIndexOf("/") + 1);
-                                        filePaths.push(this.selectedTable + "/" + fileName);
-                                    }
-                                });
-                                if (filePaths.length > 0) {
-                                    let { error: removeError } = await this.supabase.storage
-                                        .from("sources")
-                                        .remove(filePaths);
-                                    if (removeError && removeError.status !== 404) {
-                                        console.error("전체 삭제 파일 제거 에러:", removeError);
-                                    }
-                                }
-                            }
-                        }
-                        let { error: deleteError } = await this.supabase
-                            .from(this.selectedTable)
-                            .delete();
-                        if (deleteError) {
-                            console.error("전체 삭제 row 제거 에러:", deleteError);
-                        } else {
-                            alert("전체 삭제되었습니다.");
-                            this.tableData = [];
-                        }
-                    }
-                },
-                async prevPage() {
-                    if (this.currentPage > 1) {
-                        this.currentPage--;
-                        await this.fetchTableDataByTable();
-                    }
-                },
-                async nextPage() {
-                    if (this.currentPage < this.totalPages) {
-                        this.currentPage++;
-                        await this.fetchTableDataByTable();
-                    }
-                },
-            },
-            watch: {
-                currentView(newView) {
-                    // 로그인 상태가 아니면 'login'과 'signup' 외의 페이지로 이동 불가
-                    if (newView !== "login" && newView !== "signup" && !this.isLoggedIn) {
-                        this.currentView = "login";
-                    }
+          // 테이블 선택 -> 데이터 조회
+          async selectTable(table) {
+            this.selectedTable = table;
+            this.currentPage = 1;
+            await this.fetchTableDataByTable();
+            this.currentView = "list";
+            if (table === "watchparty_room") {
+              this.$nextTick(() => {
+                this.initYouTubePlayers();
+              });
+            }
+          },
+          async fetchTableDataByTable() {
+            const fromIndex = (this.currentPage - 1) * this.pageSize;
+            let query = this.supabase
+              .from(this.selectedTable)
+              .select("*", { count: "exact" })
+              .order(
+                this.selectedTable === "songs" ? "artist" : this.primaryKey,
+                { ascending: true }
+              )
+              .order(this.primaryKey, { ascending: true })
+              .range(fromIndex, fromIndex + this.pageSize - 1);
+            const { data, count, error } = await query;
+            if (error) {
+              console.error(`${this.selectedTable} 데이터 조회 에러:`, error);
+              this.tableData = [];
+            } else {
+              this.tableData = data;
+              this.totalPages = Math.ceil(count / this.pageSize) || 1;
+            }
+          },
+          goToEdit(row, isNew) {
+            this.isNew = isNew;
+            this.fileUploads = {};
+            this.filePreviews = {};
+            this.editRowData = JSON.parse(JSON.stringify(row));
+            this.youtubeUrl = ""; // Reset youtubeUrl for edit
+            this.currentView = "edit";
+            if (this.selectedTable === "watchparty_room" && !isNew) {
+              this.$nextTick(() => {
+                this.initEditYouTubePlayer();
+              });
+            }
+          },
+          async newRow() {
+            if (!this.selectedTable) {
+              alert("테이블을 먼저 선택하세요.");
+              return;
+            }
+            let { data, error } = await this.supabase
+              .from(this.selectedTable)
+              .select(this.primaryKey, { count: "exact" })
+              .order(this.primaryKey, { ascending: false })
+              .limit(1);
+            let newIdx = 1;
+            if (error) {
+              console.error("새 idx 계산 에러:", error);
+            } else if (data && data.length > 0) {
+              newIdx = data[0][this.primaryKey] + 1;
+            }
+            let newRow = {};
+            if (this.tableData.length > 0) {
+              Object.keys(this.tableData[0]).forEach((col) => {
+                newRow[col] = col === this.primaryKey ? newIdx : "";
+              });
+            } else {
+              newRow[this.primaryKey] = newIdx;
+            }
+            this.goToEdit(newRow, true);
+          },
+          handleFileChange(event, key) {
+            const file = event.target.files[0];
+            if (!file) return;
+            // Validation
+            if (key === "thumbnail" || key === "img") {
+              if (!file.type.startsWith("image/")) {
+                alert("이미지 파일만 업로드할 수 있습니다.");
+                return;
+              }
+            }
+            if (key === "mp3file") {
+              const ext = file.name.split(".").pop().toLowerCase();
+              if (this.isNew) {
+                if (!["mp3", "flac"].includes(ext)) {
+                  alert("mp3 또는 flac 파일만 업로드할 수 있습니다.");
+                  return;
                 }
-            },
-            mounted() {
-                this.checkSession(); // 앱 시작 시 세션 확인
-            },
-        });
-        app.mount("#app");
+              } else {
+                if (ext !== "mp3") {
+                  alert("mp3 파일만 수정할 수 있습니다.");
+                  return;
+                }
+              }
+            }
+            this.fileUploads[key] = file;
+            this.filePreviews[key] = URL.createObjectURL(file);
+          },
+          extractYoutubeId(url) {
+            const regex =
+              /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/|live\/))([\w-]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+          },
+          async addWatchPartyRoom() {
+            const youtubeId = this.extractYoutubeId(this.newRoom.youtubeUrl);
+            if (!youtubeId) {
+              alert("Invalid YouTube URL");
+              return;
+            }
+            const newRoomData = {
+              title: this.newRoom.title,
+              youtube_id: youtubeId,
+              public: this.newRoom.public,
+            };
+            const { data, error } = await this.supabase
+              .from("watchparty_room")
+              .insert([newRoomData])
+              .select();
+            if (error) {
+              console.error("Supabase insert error:", error);
+              alert("Failed to add room");
+              return;
+            }
+            const roomIdx = data[0].idx;
+            // Create corresponding sync entry
+            await this.createSyncEntry(roomIdx);
+            this.newRoom.title = "";
+            this.newRoom.youtubeUrl = "";
+            this.newRoom.youtubeId = "";
+            this.newRoom.public = false;
+            this.fetchTableDataByTable();
+          },
+          async createSyncEntry(roomIdx) {
+            const syncData = {
+              watchparty_room_idx: roomIdx,
+              timeline: 0,
+              play: false,
+            };
+            const { error } = await this.supabase
+              .from("sync")
+              .insert([syncData]);
+            if (error) {
+              console.error("Failed to create sync entry:", error);
+            }
+          },
+          async updateSyncTimeline(roomIdx, timeline, play) {
+            const { error } = await this.supabase
+              .from("sync")
+              .update({ timeline, play })
+              .eq("watchparty_room_idx", roomIdx);
+            if (error) {
+              console.error("Failed to update sync timeline:", error);
+            }
+          },
+          initYouTubePlayers() {
+            this.tableData.forEach((row) => {
+              const playerId = `player-${row.idx}`;
+              const player = new YT.Player(playerId, {
+                height: "157",
+                width: "280",
+                videoId: row.youtube_id,
+                events: {
+                  onReady: (event) => {
+                    this.players[row.idx] = event.target;
+                  },
+                  onStateChange: (event) => {
+                    this.handlePlayerStateChange(row.idx, event.data);
+                  },
+                },
+              });
+            });
+          },
+          initEditYouTubePlayer() {
+            if (this.editRowData.youtube_id) {
+              const player = new YT.Player("edit-player", {
+                height: "157",
+                width: "280",
+                videoId: this.editRowData.youtube_id,
+                events: {
+                  onReady: (event) => {
+                    this.players["edit"] = event.target;
+                  },
+                  onStateChange: (event) => {
+                    this.handlePlayerStateChange("edit", event.data);
+                  },
+                },
+              });
+            }
+          },
+          handlePlayerStateChange(roomIdx, state) {
+            if (state === YT.PlayerState.PLAYING) {
+              this.startSyncInterval(roomIdx);
+            } else {
+              this.stopSyncInterval(roomIdx);
+            }
+            if (roomIdx !== "edit") {
+              this.updateSyncTimeline(
+                roomIdx,
+                this.players[roomIdx].getCurrentTime(),
+                state === YT.PlayerState.PLAYING
+              );
+            }
+          },
+          startSyncInterval(roomIdx) {
+            if (this.syncIntervals[roomIdx]) {
+              clearInterval(this.syncIntervals[roomIdx]);
+            }
+            this.syncIntervals[roomIdx] = setInterval(() => {
+              if (this.players[roomIdx]) {
+                const currentTime = this.players[roomIdx].getCurrentTime();
+                this.updateSyncTimeline(roomIdx, currentTime, true);
+              }
+            }, 1000);
+          },
+          stopSyncInterval(roomIdx) {
+            if (this.syncIntervals[roomIdx]) {
+              clearInterval(this.syncIntervals[roomIdx]);
+              delete this.syncIntervals[roomIdx];
+            }
+          },
+          async saveEdit() {
+            if (!this.selectedTable) return;
+
+            // YouTube ID 처리
+            if (this.selectedTable === "watchparty_room" && this.youtubeUrl) {
+              const youtubeId = this.extractYoutubeId(this.youtubeUrl);
+              if (youtubeId) {
+                this.editRowData.youtube_id = youtubeId;
+              }
+            }
+
+            // 파일 처리
+            for (let key in this.editRowData) {
+              // ─── songs 테이블 mp3file 처리 ───
+              if (
+                this.selectedTable === "songs" &&
+                key === "mp3file" &&
+                this.fileUploads[key]
+              ) {
+                const file = this.fileUploads[key];
+                const fileName = file.name;
+                const folder = "mp3";
+                const filePath = `${folder}/${fileName}`;
+
+                // 새 MP3 업로드
+                const { data: uploadData, error: uploadErr } =
+                  await this.supabase.storage
+                    .from("songs")
+                    .upload(filePath, file, { upsert: true });
+                if (uploadErr) {
+                  console.error("MP3 업로드 에러:", uploadErr.message);
+                  alert("MP3 파일 업로드 실패: " + uploadErr.message);
+                  return;
+                }
+
+                // Public URL 가져오기
+                const { data: urlData, error: urlErr } =
+                  await this.supabase.storage
+                    .from("songs")
+                    .getPublicUrl(filePath);
+                if (urlErr) {
+                  console.error("MP3 URL 생성 에러:", urlErr.message);
+                  alert("MP3 URL 생성 실패: " + urlErr.message);
+                } else {
+                  this.editRowData[key] = urlData.publicUrl;
+                }
+                continue;
+              }
+
+              // ─── img / thumbnail 처리 ───
+              if (
+                (key === "img" || key === "thumbnail") &&
+                this.fileUploads[key]
+              ) {
+                const file = this.fileUploads[key];
+                const currentURL = this.editRowData[key];
+                const fileName = file.name;
+                const folder = key === "thumbnail" ? "thumbnail" : "";
+                const filePath = folder ? `${folder}/${fileName}` : fileName;
+
+                // 기존 파일 삭제
+                if (currentURL) {
+                  const { error: removeError } = await this.supabase.storage
+                    .from(this.selectedTable)
+                    .remove([filePath]);
+                  if (removeError && removeError.status !== 404) {
+                    console.error(`${key} 기존 파일 삭제 에러:`, removeError);
+                  }
+                }
+
+                // 새 파일 업로드
+                const { error: uploadError } = await this.supabase.storage
+                  .from(this.selectedTable)
+                  .upload(filePath, file, { upsert: true });
+                if (uploadError) {
+                  console.error(`${key} 새 파일 업로드 에러:`, uploadError);
+                } else {
+                  // URL 가져오기
+                  const { data: publicURLData, error: urlError } =
+                    await this.supabase.storage
+                      .from(this.selectedTable)
+                      .getPublicUrl(filePath);
+                  if (urlError) {
+                    console.error(`${key} URL 생성 에러:`, urlError);
+                  } else {
+                    this.editRowData[key] = publicURLData.publicUrl;
+                  }
+                }
+              }
+            }
+
+            // 데이터 저장 (신규/수정)
+            if (this.isNew) {
+              const { data, error } = await this.supabase
+                .from(this.selectedTable)
+                .insert([this.editRowData])
+                .select();
+              if (error) {
+                console.error("새 row 삽입 에러:", error);
+              } else {
+                alert("추가되었습니다.");
+                if (this.selectedTable === "watchparty_room") {
+                  const roomIdx = data[0].idx;
+                  await this.createSyncEntry(roomIdx);
+                }
+              }
+            } else {
+              const { error } = await this.supabase
+                .from(this.selectedTable)
+                .update(this.editRowData)
+                .eq(this.primaryKey, this.editRowData[this.primaryKey]);
+              if (error) {
+                console.error("row 수정 에러:", error);
+              } else {
+                alert("수정되었습니다.");
+              }
+            }
+            this.currentView = "list";
+            this.fetchTableDataByTable();
+          },
+          backToList() {
+            this.currentView = "list";
+            this.editRowData = {};
+            this.fileUploads = {};
+            this.filePreviews = {};
+          },
+          async deleteRow(row) {
+            if (!this.selectedTable) return;
+            if (confirm("해당 row를 삭제하시겠습니까?")) {
+              const fileKeys = ["img", "thumbnail"];
+              for (let key of fileKeys) {
+                if (row[key]) {
+                  let fileName = row[key].substring(
+                    row[key].lastIndexOf("/") + 1
+                  );
+                  let filePath = fileName;
+                  let { error: fileDelError } = await this.supabase.storage
+                    .from(this.selectedTable)
+                    .remove([filePath]);
+                  if (fileDelError && fileDelError.status !== 404) {
+                    console.error(`${key} 파일 삭제 에러:`, fileDelError);
+                  }
+                }
+              }
+              const { error } = await this.supabase
+                .from(this.selectedTable)
+                .delete()
+                .eq(this.primaryKey, row[this.primaryKey]);
+              if (error) {
+                console.error("row 삭제 에러:", error);
+              } else {
+                this.fetchTableDataByTable();
+              }
+            }
+          },
+          async deleteAllRows() {
+            if (!this.selectedTable) return;
+            if (confirm("정말 모든 행을 삭제하시겠습니까?")) {
+              if (this.tableColumns && this.tableColumns.includes("img")) {
+                let { data: allData, error } = await this.supabase
+                  .from(this.selectedTable)
+                  .select("img");
+                if (error) {
+                  console.error("전체 삭제 이미지 데이터 조회 에러:", error);
+                } else {
+                  let filePaths = [];
+                  allData.forEach((row) => {
+                    if (row.img) {
+                      let fileName = row.img.substring(
+                        row.img.lastIndexOf("/") + 1
+                      );
+                      filePaths.push(this.selectedTable + "/" + fileName);
+                    }
+                  });
+                  if (filePaths.length > 0) {
+                    let { error: removeError } = await this.supabase.storage
+                      .from("sources")
+                      .remove(filePaths);
+                    if (removeError && removeError.status !== 404) {
+                      console.error("전체 삭제 파일 제거 에러:", removeError);
+                    }
+                  }
+                }
+              }
+              let { error: deleteError } = await this.supabase
+                .from(this.selectedTable)
+                .delete();
+              if (deleteError) {
+                console.error("전체 삭제 row 제거 에러:", deleteError);
+              } else {
+                alert("전체 삭제되었습니다.");
+                this.tableData = [];
+              }
+            }
+          },
+          async prevPage() {
+            if (this.currentPage > 1) {
+              this.currentPage--;
+              await this.fetchTableDataByTable();
+            }
+          },
+          async nextPage() {
+            if (this.currentPage < this.totalPages) {
+              this.currentPage++;
+              await this.fetchTableDataByTable();
+            }
+          },
+        },
+        watch: {
+          currentView(newView) {
+            // 로그인 상태가 아니면 'login'과 'signup' 외의 페이지로 이동 불가
+            if (
+              newView !== "login" &&
+              newView !== "signup" &&
+              !this.isLoggedIn
+            ) {
+              this.currentView = "login";
+            }
+          },
+        },
+        mounted() {
+          this.checkSession(); // 앱 시작 시 세션 확인
+        },
+      });
+      app.mount("#app");
     </script>
-</body>
+  </body>
 </html>
