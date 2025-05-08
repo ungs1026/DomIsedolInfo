@@ -42,11 +42,11 @@
   <div id="app">
     <header>
       <div>닉네임: <span id="nickname"></span></div>
-      <button id="back-button">List</button>
+      <button id="back-button" onclick="showRoomList()">List</button>
     </header>
     <main>
       <div id="room-list">
-        <h2>Watch Party</h2>
+        <h2>Watch Party 방 목록</h2>
         <ul id="rooms"></ul>
       </div>
       <div id="party-view">
@@ -62,7 +62,7 @@
             <div id="chat-log"></div>
             <div id="chat-input">
               <input type="text" id="chat-text" placeholder="채팅을 입력하세요..." />
-              <button id="chat-send">Send</button>
+              <button id="chat-send">send</button>
             </div>
           </div>
         </div>
@@ -73,16 +73,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
     const SUPABASE_URL = "https://pdwbghdbrzcaftdzjegw.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkd2JnaGRicnpjYWZ0ZHpqZWd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwNjI4NzYsImV4cCI6MjA1ODYzODg3Nn0.PS9lyc45XXnhVw52qq9TOQyYiWclxNxPwLGtSFX8VbI";
-
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkd2JnaGRicnpjYWZ0ZHpqZWd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwNjI4NzYsImV4cCI6MjA1ODYzODg3Nn0.PS9lyc45XXnhVw52qq9TOQyYiWclxNxPwLGtSFX8VbI";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let player, roomId, syncInterval;
+    let player, roomId, commentSub, syncSub;
     let playerReadyVideoId = null;
-    let updateChatInterval;
-    let shownComments = new Set();
-    let syncCount = 0;
-
     const nicknameEl = document.getElementById('nickname');
     const roomsUl = document.getElementById('rooms');
     const roomListDiv = document.getElementById('room-list');
@@ -112,16 +108,16 @@
     }
 
     function onYouTubeIframeAPIReady() {
-      if (playerReadyVideoId) {
-        createPlayer();
-      }
+      if (playerReadyVideoId) createPlayer();
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) loadChat();
     }
 
     function initPlayer(videoId) {
       playerReadyVideoId = videoId;
-      if (window.YT && YT.Player) {
-        createPlayer();
-      }
+      if (window.YT && YT.Player) createPlayer();
     }
 
     function createPlayer() {
@@ -129,20 +125,16 @@
       player = new YT.Player('player', {
         videoId: playerReadyVideoId,
         playerVars: { controls: 0, modestbranding: 1, autoplay: 0 },
-        events: {
-          onStateChange: () => {
-            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-              updateChatInterval = setInterval(loadChat, 1000);
-            } else {
-              clearInterval(updateChatInterval);
-            }
-          }
-        }
+        events: { onStateChange: onPlayerStateChange }
       });
     }
 
     async function loadRooms() {
-      const { data } = await supabase.from('watchparty_room').select('*').eq('public', true).order('create_at', { ascending: false });
+      const { data } = await supabase
+        .from('watchparty_room')
+        .select('*')
+        .eq('public', true)
+        .order('idx', { ascending: false });
       roomsUl.innerHTML = '';
       data?.forEach(r => {
         const li = document.createElement('li');
@@ -152,111 +144,105 @@
       });
     }
 
+    function showRoomList() {
+      roomListDiv.style.display = 'block';
+      partyViewDiv.style.display = 'none';
+      backButton.style.display = 'none';
+      if (commentSub) commentSub.unsubscribe();
+      if (syncSub) syncSub.unsubscribe();
+      loadRooms();
+    }
+
     function enterRoom(idx, youtubeId) {
       roomId = idx;
-      shownComments.clear();
       history.pushState(null, '', `?room=${idx}`);
       roomListDiv.style.display = 'none';
       partyViewDiv.style.display = 'flex';
+      backButton.style.display = 'block';
       initPlayer(youtubeId);
-      loadChat();
-      startSyncPolling();
 
-      // play 컬럼 변경 감지 (실시간)
-      supabase
-        .channel('sync-play-'+roomId)
-        .on(
-          'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'sync', filter: `watchparty_room_idx=eq.${roomId}` },
-          (payload) => {
-            const oldPlay = payload.old.play;
-            const newPlay = payload.new.play;
-            if (oldPlay !== newPlay) {
-              // 2초 대기 후 재생/일시정지 실행
-              setTimeout(() => {
-                if (newPlay) player.playVideo();
-                else player.pauseVideo();
-              }, 2000);
-            }
-          }
-        )
+      // 댓글 실시간 구독
+      commentSub = supabase
+        .channel(`comments-${roomId}`)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comment_list', filter: `watchparty_room_idx=eq.${roomId}` }, ({ new: c }) => {
+          const p = document.createElement('p');
+          p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
+          chatLog.appendChild(p);
+          chatLog.scrollTop = chatLog.scrollHeight;
+        })
         .subscribe();
+
+      // sync 실시간 구독
+      syncSub = supabase
+        .channel(`sync-${roomId}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sync', filter: `watchparty_room_idx=eq.${roomId}` }, ({ new: s }) => {
+          const { timeline, play } = s;
+          if (play === false) {
+            sessionStorage.setItem('savedTime', timeline);
+            player.pauseVideo();
+          } else {
+            const t = parseFloat(sessionStorage.getItem('savedTime') || timeline);
+            setTimeout(() => {
+              player.seekTo(t, true);
+              player.playVideo();
+            }, 2000);
+          }
+          loadChat();
+        })
+        .subscribe();
+
+      // 초기에 한 번 채팅과 sync 상태 동기화
+      loadChat();
     }
 
     async function loadChat() {
-      const currentTime = player ? Math.floor(player.getCurrentTime()) : 0;
-      const { data } = await supabase.from('comment_list').select('*').eq('watchparty_room_idx', roomId).lte('timeline', currentTime).order('create_at', { ascending: true });
-      if (data && data.length > 0) {
-        data.forEach(c => {
-          const commentKey = `${c.nickname}-${c.timeline}-${c.comment}`;
-          if (!shownComments.has(commentKey)) {
-            shownComments.add(commentKey);
-            const p = document.createElement('p');
-            p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
-            chatLog.appendChild(p);
-          }
-        });
-        chatLog.scrollTop = chatLog.scrollHeight;
-      }
+      const currentTime = player ? player.getCurrentTime() : 0;
+      const { data } = await supabase
+        .from('comment_list')
+        .select('*')
+        .eq('watchparty_room_idx', roomId)
+        .lte('timeline', currentTime)
+        .order('timeline', { ascending: true });
+      chatLog.innerHTML = '';
+      if (data) data.forEach(c => {
+        const p = document.createElement('p');
+        p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
+        chatLog.appendChild(p);
+      });
+      chatLog.scrollTop = chatLog.scrollHeight;
     }
 
     chatSend.addEventListener('click', async () => {
       const text = chatText.value.trim(); if (!text) return;
-      await supabase.from('comment_list').insert([{ watchparty_room_idx: roomId, nickname: sessionStorage.getItem('user_nickname'), comment: text, timeline: player ? Math.floor(player.getCurrentTime()) : 0 }]);
+      await supabase.from('comment_list').insert([{ watchparty_room_idx: roomId, nickname: sessionStorage.getItem('user_nickname'), comment: text, timeline: player ? player.getCurrentTime() : 0 }]);
       chatText.value = '';
-      loadChat();
+      // loadChat(); // realtime will handle
     });
 
-    volumeSlider.addEventListener('input', () => {
-      if (player && player.setVolume) player.setVolume(volumeSlider.value * 100);
-    });
+    volumeSlider.addEventListener('input', () => { if (player && player.setVolume) player.setVolume(volumeSlider.value * 100); });
 
     syncBtn.addEventListener('click', async () => {
       const { data } = await supabase.from('sync').select('timeline, play').eq('watchparty_room_idx', roomId).single();
       if (!player || !data) return;
-      player.seekTo(data.timeline, true);
-      data.play ? player.playVideo() : player.pauseVideo();
-      syncCount++;
-    });
-
-    function startSyncPolling() {
-      if (syncCount >= 1) {
-        if (syncInterval) clearInterval(syncInterval);
-        syncInterval = setInterval(async () => {
-          const { data } = await supabase.from('sync').select('timeline, play').eq('watchparty_room_idx', roomId).single();
-          if (!player || !data) return;
-          const current = player.getCurrentTime();
-          if (Math.abs(current - data.timeline) > 2) {
-            player.seekTo(data.timeline, true);
-            data.play ? player.playVideo() : player.pauseVideo();
-          }
-        }, 2000);
+      if (data.play === false) {
+        sessionStorage.setItem('savedTime', data.timeline);
+        player.pauseVideo();
+      } else {
+        const t = parseFloat(sessionStorage.getItem('savedTime') || data.timeline);
+        setTimeout(() => { player.seekTo(t, true); player.playVideo(); }, 2000);
       }
-    }
-
-    backButton.addEventListener('click', () => {
-      roomListDiv.style.display = 'block';
-      partyViewDiv.style.display = 'none';
-      history.pushState(null, '', location.pathname);
-      if (syncInterval) clearInterval(syncInterval);
+      loadChat();
     });
 
     window.addEventListener('DOMContentLoaded', () => {
       askNickname();
       const params = new URLSearchParams(location.search);
       const r = params.get('room');
-      if (r) {
-        supabase.from('watchparty_room').select('youtube_id').eq('idx', r).single().then(({ data }) => { if (data) enterRoom(r, data.youtube_id); });
-      } else loadRooms();
+      if (r) supabase.from('watchparty_room').select('youtube_id').eq('idx', r).single().then(({ data }) => { if (data) enterRoom(r, data.youtube_id); });
+      else { showRoomList(); }
     });
 
-    window.addEventListener('popstate', () => {
-      if (!location.search.includes('room=')) {
-        roomListDiv.style.display = 'block';
-        partyViewDiv.style.display = 'none';
-        if (syncInterval) clearInterval(syncInterval);
-      }
-    });
+    window.addEventListener('popstate', () => { if (!location.search.includes('room=')) showRoomList(); });
   </script>
 </body>
 </html>
