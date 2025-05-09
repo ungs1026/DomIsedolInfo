@@ -852,16 +852,35 @@
               console.error("Failed to update sync timeline:", error);
             }
           },
-          initYouTubePlayers() {
-            this.tableData.forEach((row) => {
+          // 테스트 중
+          async initYouTubePlayers() {
+            this.tableData.forEach(async (row) => {
               const playerId = `player-${row.idx}`;
+              // 1) sync 테이블에서 저장된 timeline 조회
+              const { data: syncData, error: syncErr } = await this.supabase
+                .from('sync')
+                .select('timeline')
+                .eq('watchparty_room_idx', row.idx)
+                .single();
+              const startTime = syncErr ? 0 : syncData.timeline;
+
+              // 2) 플레이어 생성 시 playerVars에 autoplay, start 설정
               const player = new YT.Player(playerId, {
                 height: "157",
                 width: "280",
                 videoId: row.youtube_id,
+                playerVars: {
+                  autoplay: 1,
+                  start: Math.floor(startTime),
+                  mute: 1
+                },
                 events: {
                   onReady: (event) => {
                     this.players[row.idx] = event.target;
+                    // ensure 플레이어가 정확한 위치에서 재생 시작
+                    event.target.seekTo(startTime);
+                    event.target.playVideo();
+                    event.target.mute();
                   },
                   onStateChange: (event) => {
                     this.handlePlayerStateChange(row.idx, event.data);
@@ -870,6 +889,7 @@
               });
             });
           },
+
           initEditYouTubePlayer() {
             if (this.editRowData.youtube_id) {
               const player = new YT.Player("edit-player", {
