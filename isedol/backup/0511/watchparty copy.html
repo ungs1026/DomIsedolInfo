@@ -20,7 +20,7 @@
     header { background: linear-gradient(90deg, #9b59b6 20%, #5a2171 30%,black 75%); height: 40px; padding-inline: 20px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
     header span { font-weight: bold; }
     main { flex: 1; display: flex; position: relative; height: calc(100vh-40px);}
-    #room-list { padding: 1rem; width: 100%; overflow-y: auto; background-color: black; color: white; font-weight: bold; position: relative;}
+    #room-list { padding: 1rem; width: 100%; overflow-y: auto; background-color: black; color: white; font-weight: bold;}
     #room-list h2 {color: white;}
     #room-list ul { list-style: none; padding: 0;}
     #room-list li { position: relative; padding: 0.75rem; margin-bottom: 20px; color: white; box-shadow: 0 0 5px 2px #9b59b6; cursor: pointer; border-radius: 4px;
@@ -50,15 +50,6 @@
     #back-button { font-family: "Kanit", "Jua", sans-serif; background: #fff; color: var(--main-color); border: 2px solid var(--main-color); padding: 2px 10px; text-transform: uppercase; border-radius: 4px; cursor: pointer; }
     #alert-message { opacity: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; transition: opacity 0.5s; z-index: 200;}
     #alert-message.show { opacity: 1;}
-    /* 팝업 플레이어 스타일 */
-    #popup-player {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      width: 300px;
-      height: 169px; /* 16:9 비율 */
-      z-index: 100;
-    }
   </style>
 </head>
 <body>
@@ -92,7 +83,6 @@
           </div>
         </div>
       </div>
-      <div id="popup-player"></div> <!-- 팝업 플레이어를 main 내부로 이동 -->
     </main>
   </div>
   <script src="https://www.youtube.com/iframe_api"></script>
@@ -109,7 +99,6 @@
     let shownComments = new Set();
     let syncCount = 0;
     let alertCount = 0; // Alert counter for first-time access
-    let popupPlayer; // 팝업 플레이어
 
     const nicknameEl = document.getElementById('nickname');
     const roomsUl = document.getElementById('rooms');
@@ -123,7 +112,6 @@
     const backButton = document.getElementById('back-button');
     const headerEl = document.querySelector('header');
     const chatInputDiv = document.getElementById('chat-input');
-    const popupPlayerDiv = document.getElementById('popup-player');
 
     function formatTime(seconds) {
       seconds = Math.floor(seconds);
@@ -170,37 +158,13 @@
       });
     }
 
-    function createPopupPlayer(videoId, time) {
-      if (popupPlayer) popupPlayer.destroy();
-      popupPlayer = new YT.Player('popup-player', {
-        videoId: videoId,
-        playerVars: { controls: 0, modestbranding: 1, autoplay: 1, start: time }, // 조작바 숨김
-        width: 300,
-        height: 169,
-        events: {
-          onReady: () => {
-            popupPlayer.seekTo(time, true);
-            popupPlayer.playVideo();
-            popupPlayer.setVolume(10);
-          }
-        }
-      });
-      popupPlayerDiv.style.display = 'block'; // 팝업 표시 보장
-    }
-
     async function loadRooms() {
       const { data } = await supabase.from('watchparty_room').select('*').eq('public', true).order('create_at', { ascending: false });
       roomsUl.innerHTML = '';
       data?.forEach(r => {
         const li = document.createElement('li');
         li.textContent = `${r.title}`;
-        li.addEventListener('click', () => {
-          if (popupPlayer) {
-            popupPlayer.destroy();
-            popupPlayerDiv.style.display = 'none';
-          }
-          enterRoom(r.idx, r.youtube_id, r.title);
-        });
+        li.addEventListener('click', () => enterRoom(r.idx, r.youtube_id, r.title));
         roomsUl.appendChild(li);
       });
     }
@@ -213,12 +177,12 @@
       history.pushState(null, '', `?room=${roomTitle}`);
       roomListDiv.style.display = 'none';
       partyViewDiv.style.display = 'flex';
-      popupPlayerDiv.style.display = 'none'; // 다른 영상 클릭 시 팝업 숨기기
       initPlayer(youtubeId);
       syncCount = 0; // Reset sync count
       alertCount = 0; // Reset alert count
       volumeSlider.value = 0.5; // Reset volume slider
       const nickname = sessionStorage.getItem('user_nickname');
+      // Insert entry message into comment_list table
       await supabase.from('comment_list').insert([
         { watchparty_room_idx: roomId, nickname: "host", comment: `<< ${nickname}이 접속하였습니다. >>`, timeline: 0 }
       ]);
@@ -257,7 +221,7 @@
               const p = document.createElement('p');
               if (c.nickname === "host") {
                 p.classList.add('host');
-                p.textContent = `[[ ${c.comment} ]]`; // 호스트 메시지 포맷 수정
+                p.textContent = `[[ ${c.comment} ]]`;
               } else {
                 p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
               }
@@ -285,7 +249,7 @@
             const p = document.createElement('p');
             if (c.nickname === "host") {
               p.classList.add('host');
-              p.textContent = `[[ ${c.comment} ]]`; // 호스트 메시지 포맷 수정
+              p.textContent = `[[ ${c.comment} ]]`;
             } else {
               p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
             }
@@ -347,35 +311,13 @@
     }
 
     backButton.addEventListener('click', () => {
-      handleListButtonClick();
-      handleListButtonClick();
-    });
-
-    // listButton 클릭 로직을 별도 함수로 분리
-    function handleListButtonClick() {
-      if (player) {
-        player.pauseVideo(); // 메인 플레이어 일시 정지
-      }
       roomListDiv.style.display = 'block';
       partyViewDiv.style.display = 'none';
       history.pushState(null, '', location.pathname);
       if (syncInterval) clearInterval(syncInterval);
-      if (chatSubscription) chatSubscription.unsubscribe(); // 채팅 구독 해제
-      syncCount = 0; // 동기화 카운트 초기화
-      alertCount = 0; // 알림 카운트 초기화
-      if (player && player.getVideoData) {
-        const videoId = player.getVideoData().video_id;
-        const currentTime = player.getCurrentTime();
-        createPopupPlayer(videoId, currentTime);
-      }
-    }
-
-    popupPlayerDiv.addEventListener('click', () => {
-      if (popupPlayer) {
-        popupPlayer.destroy();
-        popupPlayerDiv.style.display = 'none';
-      }
-      enterRoom(roomId, playerReadyVideoId, ''); // 현재 방으로 다시 입장
+      if (chatSubscription) chatSubscription.unsubscribe(); // Unsubscribe from chat
+      syncCount = 0; // Reset sync count
+      alertCount = 0; // Reset alert count
     });
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -388,22 +330,14 @@
 
     window.addEventListener('popstate', () => {
       if (!location.search.includes('room=')) {
-        if (player) {
-          player.pauseVideo(); // 메인 플레이어 일시 정지
-        }
         roomListDiv.style.display = 'block';
         partyViewDiv.style.display = 'none';
         if (syncInterval) clearInterval(syncInterval);
         if (chatSubscription) chatSubscription.unsubscribe(); // Unsubscribe from chat
         syncCount = 0; // Reset sync count
         alertCount = 0; // Reset alert count
-        if (player && player.getVideoData) {
-          const videoId = player.getVideoData().video_id;
-          const currentTime = player.getCurrentTime();
-          createPopupPlayer(videoId, currentTime);
-        }
       }
     });
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e0ed55bdc04587',t:'MTc0Njk1ODY1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
