@@ -295,6 +295,9 @@
         <!-- 우측 리스트 콘텐츠 -->
         <div class="content">
           <button class="plus-button" @click="newRow">+</button>
+          <button class="refresh-button" @click="refreshTable">
+            <img src="../source/refresh.svg" alt="refresh">
+          </button>
           <div v-if="selectedTable === 'watchparty_room'">
             <h2>Watch Party Room - 데이터</h2>
             <!-- watchparty_room 테이블에 대한 입력 폼 -->
@@ -305,7 +308,7 @@
                 v-model="newRoom.youtubeUrl"
                 placeholder="YouTube URL"
               />
-              <label>
+              <label style="display: flex; align-items: center; gap: 6px;">
                 <input type="checkbox" v-model="newRoom.public" /> Public
               </label>
               <button @click="addWatchPartyRoom">Add Room</button>
@@ -594,6 +597,60 @@
           },
         },
         methods: {
+          async deleteRow(row) {
+            if (!this.selectedTable) return;
+            if (confirm("해당 row를 삭제하시겠습니까?")) {
+              if (this.selectedTable === "watchparty_room") {
+                // 먼저 comment_list 테이블에서 관련 데이터 삭제
+                const { error: commentError } = await this.supabase
+                  .from("comment_list")
+                  .delete()
+                  .eq("watchparty_room_idx", row.idx);
+                if (commentError) {
+                  console.error("comment_list 삭제 에러:", commentError);
+                  return;
+                }
+
+                // 다음으로 sync 테이블에서 관련 데이터 삭제
+                const { error: syncError } = await this.supabase
+                  .from("sync")
+                  .delete()
+                  .eq("watchparty_room_idx", row.idx);
+                if (syncError) {
+                  console.error("sync 삭제 에러:", syncError);
+                  return;
+                }
+              }
+
+              const fileKeys = ["img", "thumbnail"];
+              for (let key of fileKeys) {
+                if (row[key]) {
+                  let fileName = row[key].substring(row[key].lastIndexOf("/") + 1);
+                  let filePath = fileName;
+                  let { error: fileDelError } = await this.supabase.storage
+                    .from(this.selectedTable)
+                    .remove([filePath]);
+                  if (fileDelError && fileDelError.status !== 404) {
+                    console.error(`${key} 파일 삭제 에러:`, fileDelError);
+                  }
+                }
+              }
+              const { error } = await this.supabase
+                .from(this.selectedTable)
+                .delete()
+                .eq(this.primaryKey, row[this.primaryKey]);
+              if (error) {
+                console.error("row 삭제 에러:", error);
+              } else {
+                this.fetchTableDataByTable();
+              }
+            }
+          },
+          async refreshTable() {
+            if (this.selectedTable) {
+              await this.fetchTableDataByTable();
+            }
+          },
           // watchparty_room용 코멘트 등록 (엔터키)
           async submitComment(row) {
             const txt = this.commentInputs[row.idx];
