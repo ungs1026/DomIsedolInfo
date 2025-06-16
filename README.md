@@ -1,4 +1,4 @@
-# **IsegyeIDOL Dom_Info**
+# **IsegyeIDOL Dom_Info <수정중>**
 <!--프로젝트 메인 이미지-->
 ![Project Title](readme_img/members.png)
 
