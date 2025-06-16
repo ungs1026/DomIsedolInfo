@@ -203,9 +203,9 @@ const app = createApp({
       },
     ]);
     const songs = ref([
-      { title: "이세계 아이돌 - SYZYGY", img: "source/syzygy.png" },
+      { title: "이세계 아이돌 - Stargazers", img: "source/stargazers.png" },
       {
-        title: `<a href="https://www.youtube.com/watch?v=v9Jqz13gg8k" target="_blank" style="color: white;">YOUTUBE</a>`,
+        title: `<a href="https://www.youtube.com/watch?v=MCyL9k_Tiok" target="_blank" style="color: white;">YOUTUBE</a>`,
         img: "source/profiles/sns/youtube.svg",
       },
       {
@@ -213,9 +213,9 @@ const app = createApp({
         img: "source/profiles/sns/naver_cafe.svg",
       },
       {
-        title: `<a href="https://namu.wiki/w/SYZYGY(%EC%9D%B4%EC%84%B8%EA%B3%84%EC%95%84%EC%9D%B4%EB%8F%8C)" target="_blank" style="color: white;">[가사 일부]</a>
-              따라와, 내 universe Findin’ through the light 함께할 night, 시작된 day Come in SYZYGY (yeah) 널 기다려`,
-        img: "source/syzygy.png",
+        title: `<a href="https://namu.wiki/w/Stargazers(%EC%9D%B4%EC%84%B8%EA%B3%84%EC%95%84%EC%9D%B4%EB%8F%8C)" target="_blank" style="color: white;">[가사 일부]</a>
+              살며시 옮겨오는 그대 거리 틈에 닿는 숨 꿈일지도 몰라 난 알고 싶어 눈동자에 비치는 모습 누구보다 짙은 you 이젠 멀어질 수 없어 내 맘 속의 truth`,
+        img: "source/stargazers.png",
       },
     ]);
     const videoCards = ref([]);
