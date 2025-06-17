@@ -4,7 +4,7 @@
 
 <hr>
 
-## **<주의> 해당 페이지의 모든 Source는 이세계 아이돌에게 저작권이 있습니다.**
+### **<주의> 해당 페이지의 모든 Source는 이세계 아이돌에게 저작권이 있습니다.**
   
 <!--목차-->
 ## 목차
@@ -13,6 +13,7 @@
     - [Techniques](#techniques)
     - [Distribution](#distribution)
 - [**Page**](#page)
+    - [Fixed Element](#fixed-element)
     - [Main Page](#main-page)
     - [Member Page](#member-page)
     - [Board Page](#board-page)
@@ -52,43 +53,67 @@
 <!--각 페이지 설명-->
 ## **Page**
 
+### **Fixed Element**
+> Nav
+- 좌측 : 로고
+- 중앙 : 페이지 이동
+- 우측 : 기본 프로필 및 WatchParty 이동을 위한 button
+
+> Playbar
+- 노래 재생을 위한 목적으로 제작되어 있으며 기본 playlist는 **이세계 아이돌**의 단체 오리지널 곡 및 커버곡으로 구성되어있습니다.
+- Left : 재생 중인 곡의 기본 정보 [ 앨범커버, 제목, 가수 ]
+- Center : 음악 재생 조절을 위한 Progressbar 및 버튼
+- Right : 볼룸 조절을 위한 ProgressBar와 수치 표시
+
+<hr>
+
 ### **Main Page**
 ![Main Page](readme_img/main.png)
-- **Main Page**입니다. 해당 페이지는 초기 로드 화면으로 DB에 등록된 아이디를 통해 접속이 가능합니다.
-- 상단의 버튼을 통해 Login과 Sign up을 통해 아이디 등록 및 접속이 가능합니다.
+- **Main Page**입니다. 해당 페이지는 로딩페이지에서 로드 직후 출력되는 페이지 입니다.
+> 섹션 단위
+- 1 section : 상단 배너로 이는 상업적으로 이용할 경우 광고를 출력하기 위한 공간입니다.
+- 2 section : 각 멤버들의 정보를 간략하게 출력합니다.
+- 3 section : 최신곡을 기준으로 title, youtube url, naver cafe, 가사 일부 를 출력합니다.
+- 4 section : 각 멤버들의 최신 영상을 출력하며 이는 매일 오후 8시마다 갱신됩니다. 클릭하면 해당 섹션을 전체로 영상이 출력됩니다.
+- 5 section : reward를 무한 슬라이더로 정의해 놓았습니다.
+- Footer
 
 <hr>
 
 ### **Member Page**
 ![Member Page](readme_img/member.png)
-- **Member Page**입니다. 상단 멤버 전원의 이미지를 볼 수 있으며 3기 Cliche의 Group music을 들을 수 있습니다.
-- SideBar를 통해 정렬 및 검색이 가능하며 이미지 클릭으로 상세 페이지로 이동할 수 있습니다.
-- 각 굿즈 정보는 Primary key인 id로 확인 가능합니다.
+- **Member Page**입니다. **이세계 아이돌의 앨범아트** 및 **이세계 아이돌 멤버의 상세 정보**를 출력합니다.
+- 정보는 JavaScript에 저장되어 있으며 멤버 별 이미지를 클릭하는 경우 하단 정보가 변경됩니다.
 
 <hr>
 
 ### **Board page**
 ![Board Detail Page](readme_img/board.png)
-- **Board page**입니다. Url의 id값을 통해 각 굿즈의 name, date, production, price를 적용합니다.
-- 해당 제품의 상세 정보, 배송, 반품 및 교환에 관한 정보를 얻을 수 있습니다.
+- **Board page**입니다. 각 News, 공지사항, 자유게시판, 건의사항 으로 구성되어 있습니다.
+> Type
+- News : 새로운 정보를 교환하는 게시판입니다.
+- 공지사항 : 수정 내역 및 공지를 위한 게시판입니다.
+- 자유게시판 : 이용자들의 의견을 교환하기 위한 게시판입니다.
+- 건의사항 : 이용자들이 이용 중 건의사항을 제보하기 위한 게시판입니다
 
 <hr>
 
 ### **Playlist Page**
 ![Playlist Page](readme_img/playlist.png)
--  **Playlist Page**입니다. Bootstrap을 통해 디자인하였습니다.
-- 각 게시판의 정보는 Primary key의 id로 구성되며 password_hash를 이용해 단방향 암호화를 적용하였습니다.
+-  **Playlist Page**입니다. 이용자의 투표를 통해 높은 점수를 가진 음악 top 10을 무한슬라이드로 출력됩니다.
+-  기본 플레이리스트 및 추가적으로 플레이 리스트를 생성할 수 있습니다.
 
 ![Playlist Page_detail](readme_img/playlist_detail.png)
--  **Playlist Datail Page**입니다. Bootstrap을 통해 디자인하였습니다.
-- 각 게시판의 정보는 Primary key의 id로 구성되며 password_hash를 이용해 단방향 암호화를 적용하였습니다.
+-  **Playlist Datail Page**입니다. 해당 플레이리스트의 수정 및 삭제가 가능합니다.
+-  해당 노래를 클릭하여 해당 단일 곡 재생 및 투표, 점수를 확인할 수 있습니다.
 
 <hr>
 
 ### **WatchParty Page**
 ![WatchParty Page](readme_img/watchparty.png)
--  **WatchParty Page**입니다. Bootstrap을 통해 디자인하였습니다.
-- 각 게시판의 정보는 Primary key의 id로 구성되며 password_hash를 이용해 단방향 암호화를 적용하였습니다.
+-  **WatchParty Page**입니다. 해당 페이지는 사용자가 같이 공유 및 채팅을 진행하면서 영상 공유를 원할 경우 같이 보기 위한 페이지입니다.
+-  Supabase의 realtime기능을 이용하여 실시간으로 동기화 되도록 처리하였습니다. 
+-  영상은 유튜브의 영상이 기준이며 host가 영상을 재생한 후 sync버튼을 통해 시청자는 영상을 시청할 수 있습니다.
 
 <hr>
 
