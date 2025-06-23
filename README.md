@@ -1,4 +1,4 @@
-# **IsegyeIDOL Dom_Info <수정중>**
+# **ISEGYE IDOL Info <수정중>**
 <!--프로젝트 메인 이미지-->
 ![Project Title](readme_img/members.png)
 
@@ -12,6 +12,7 @@
     - [Features](#features)
     - [Techniques](#techniques)
     - [Distribution](#distribution)
+- [**DB Table**](#db-table)
 - [**Page**](#page)
     - [Fixed Element](#fixed-element)
     - [Loading Page](#loading-page)
@@ -29,7 +30,7 @@
 - 해당 프로젝트는 인터넷 방송인 그룹 **이세계 아이돌**의 5월 24일 고척돔 공연 축하를 위해 제작되었습니다.
 - AI의 사용법 및 적응을 위해 80% 정도 AI를 이용하여 프로젝트를 진행하였으며 주로 GPT와 GROK을 이용하였습니다.
 - 해당 프로젝트는 **이세계 아이돌 멤버들의 정보**와 **오리지널 곡 및 커버곡**, 다같이 영상 시청을 위한 **WatchParty**기능이 구현되어 있습니다.
-- 태블릿 및 모바일 환경까지 생각하여 반응형 사이트로 제작하였습니다.
+- SPA로 구현되어 있으며, 태블릿 및 모바일 환경까지 생각하여 반응형 사이트로 제작하였습니다.
 
 ### **Features**
 - ServerLess로 개발되어 있으며 Database는 PostgreSQL을 사용하는 Supabase를 이용하였습니다.
@@ -51,6 +52,11 @@
 
 ### **Distribution**
 - URL : <a href="http://isedolinfo.dothome.co.kr">이세계 아이돌</a>
+<hr>
+
+### **DB Table**
+![DB table](readme_img/isedolInfoDB.png)
+
 <hr>
 
 <!--각 페이지 설명-->
