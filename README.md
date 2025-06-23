@@ -56,11 +56,103 @@
 
 ### **DB Table**
 ![DB table](readme_img/isedolInfoDB.png)
-
+- Supabase 연결
+```
+    const SUPABASE_URL = "https://pdwbghdbrzcaftdzjegw.supabase.co"; // 여기에 네 프로젝트 URL 입력
+    const SUPABASE_ANON_KEY ="ANON_KEY"; // 여기에 네 공개 키 입력
+    // Supabase 클라이언트 생성
+    const supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+```
+- 데이터 가져오기
+```
+const fetchSliders = async () => {
+  const { data, error } = await supabase.from("sliders").select("*");
+  if (error) {
+    console.error("슬라이더 데이터 로드 에러:", error);
+  } else {
+    // Supabase에서 가져온 배열 전체를 sliders에 저장
+    sliders.value = data;
+    // DOM 갱신 후 Swiper 초기화 (v-for로 렌더링 완료 후)
+    nextTick(() => {
+      new Swiper(".main_banner", {
+        autoplay: { delay: 5000, disableOnInteraction: false },
+        loop: sliders.value.length > 1, // 슬라이드가 1개 이상일 때만 루프 활성화
+        slidesPerView: 1,
+        slidesPerGroup: 1,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+    });
+  }
+};
+```
 <hr>
 
 <!--각 페이지 설명-->
 ## **Page**
+- Page 전환 : DOM 전환 방식을 사용하고 있습니다. DOM 전환과 함께 페이지 요소들을 초기화합니다.
+```
+const switchPage = (path) => {
+  if (path == "page-main") {
+    newCp = '/';
+  } else {
+    newCp = '/' + path.replace('page-', '').replace('-', '/').replace('-', '/');
+  }
+
+  if (currentPage.value === path) return;
+  currentPage.value = path;
+  router.push(newCp);
+  nextTick(() => {
+    if (path === "page-main") {
+      initMainPage();
+    } else if (path === "page-member") {
+      initMemberPage();
+    } else if (path === "page-board") {
+      initBoardPage();
+    } else if (path === "page-playlist") {
+      initPlaylistPage();
+    } else if (path.startsWith("page-board-full-")) {
+      initFullBoardPage(path);
+    } else if (path === "page-playlist-all") {
+      fetchSelectedPlaylistSongs();
+    }
+  });
+};
+```
+- Vue3의 Router 및 MetaData
+```
+// 라우터 설정 (Vue 3 방식)
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [
+    { path: '/', component: { template: '<div>Main Page</div>' }, meta: { title: 'Isegye Idol Info Main Page', description: 'You can check information on members, latest songs, latest YouTube videos, and records.' } },
+    { path: '/member', component: { template: '<div>Member Page</div>' }, meta: { title: 'Isegye Idol Info Member Page', description: 'This is the album title of each member\'s information and group songs.' } },
+    { path: '/board', component: { template: '<div>Board Page</div>' }, meta: { title: 'Isegye Idol Info Board Page', description: 'Check the contents of new information, notice, free bulletin board, and suggestion bulletin board.' } },
+    { path: '/board/full/news', component: { template: '<div>Board Full News Page</div>' }, meta: { title: 'Isegye Idol Info Board Full News Page', description: 'Check all the posts on the new information bulletin board.' } },
+    { path: '/board/full/notice', component: { template: '<div>Board Full Notice Page</div>' }, meta: { title: 'Isegye Idol Info Board Full Notice Page', description: 'Check all the posts on the notice board.' } },
+    { path: '/board/full/free', component: { template: '<div>Board Full Free Page</div>' }, meta: { title: 'Isegye Idol Info Board Full Free Page', description: 'Check all the posts on the free bulletin board.' } },
+    { path: '/board/full/suggest', component: { template: '<div>Board Full Suggest Page</div>' }, meta: { title: 'Isegye Idol Info Board Full Suggest Page', description: 'Check all the posts on the suggestion board.' } },
+    { path: '/playlist', component: { template: '<div>Playlist Page</div>' }, meta: { title: 'Isegye Idol Info Playlist Page', description: 'Check the top 10 songs and playlist based on user ratings.' } },
+    { path: '/playlist/all', component: { template: '<div>Playlist All Page</div>' }, meta: { title: 'Isegye Idol Info Playlist All Page', description: 'You can check, play, and modify the songs in the playlist selected on the playlist page.' } },
+  ]
+});
+// 메타 태그 수동 관리
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title || 'Isegye Idol Info';
+  const metaDescription = document.querySelector('meta[name="description"]');
+  if (metaDescription) {
+    metaDescription.setAttribute('content', to.meta.description || 'It is a site to celebrate ISEGYE IDOL\'s performance at Gocheok Dome in May 2025, and to provide information and songs.');
+  }
+  next();
+});
+```
+
+<hr>
 
 ### **Fixed Element**
 > Nav
@@ -70,9 +162,10 @@
 
 > Playbar
 - 노래 재생을 위한 목적으로 제작되어 있으며 기본 playlist는 **이세계 아이돌**의 단체 오리지널 곡 및 커버곡으로 구성되어있습니다.
-- Left : 재생 중인 곡의 기본 정보 [ 앨범커버, 제목, 가수 ]
-- Center : 음악 재생 조절을 위한 Progressbar 및 버튼
-- Right : 볼룸 조절을 위한 ProgressBar와 수치 표시
+- Left : 재생 중인 곡의 기본 정보 [ 앨범커버, 제목, 가수 ]로 구성되어 있습니다.
+- Center : 음악 재생 조절을 위한 Progressbar 및 버튼으로 구성되어 있습니다.
+> 랜덤재생, 자동재생, 한곡재생, 정지, 실행, 타임라인 이동, 볼륨 조절과 같은 기능들이 구현되어 있습니다.
+- Right : 볼룸 조절을 위한 ProgressBar와 수치 표시로 구성되어 있습니다.
 
 <hr>
 
@@ -90,9 +183,12 @@
 - 1 section : 상단 배너로 이는 상업적으로 이용할 경우 광고를 출력하기 위한 공간입니다.
 - 2 section : 각 멤버들의 정보를 간략하게 출력합니다.
 - 3 section : 최신곡을 기준으로 title, youtube url, naver cafe, 가사 일부 를 출력합니다.
-- 4 section : 각 멤버들의 최신 영상을 출력하며 이는 매일 오후 8시마다 갱신됩니다. 클릭하면 해당 섹션을 전체로 영상이 출력됩니다.
+- 4 section
+> 각 멤버들의 최신 영상을 출력하며 이는 매일 오후 8시마다 갱신됩니다. <br>
+> 클릭하면 해당 섹션을 전체로 영상이 출력됩니다. <br>
+> 영상 클릭 후 닫으면 카드의 위치가 랜덤하게 변경됩니다. <br>
 - 5 section : reward를 무한 슬라이더로 정의해 놓았습니다.
-- Footer
+- Footer : Git주소 및 Email 주소가 작성되어 있습니다.
 
 <hr>
 
@@ -119,6 +215,38 @@
 -  **Playlist Page**입니다. 이용자의 투표를 통해 높은 점수를 가진 음악 top 10을 무한슬라이드로 출력됩니다.
 -  기본 플레이리스트 및 추가적으로 플레이 리스트를 생성할 수 있습니다.
 
+- 무한슬라이더 : 각 슬라이드의 크기를 계산하여 끝나는 경우 슬라이드의 마지막 위치에 생성되도록 하였습니다.
+```
+function initTopSlider() {
+  nextTick(() => {
+    const cards = topCards.value;
+    if (!cards.length === 0) return;
+    const cardWidth = cards[0].offsetWidth + 10;
+    cards.forEach((el, i) => {
+      topPositions.value[i] = i * cardWidth;
+      el.style.position = 'absolute';
+      el.style.transform = `translateX(${topPositions.value[i]}px)`;
+    });
+
+    const additionalOffsetFactor = window.innerWidth <= 768 ? 856 : 160;
+
+    function animate() {
+      if (!isTopPaused.value) {
+        for (let i = 0; i < cards.length; i++) {
+          topPositions.value[i] -= topSpeed;
+          if (topPositions.value[i] <= -cardWidth * (cards.length/2)) {
+            topPositions.value[i] += cardWidth * (cards.length/2) + window.innerWidth + additionalOffsetFactor;
+          }
+          cards[i].style.transform = `translateX(${topPositions.value[i]}px)`;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  });
+}
+```
+
 ![Playlist Page_detail](readme_img/playlist_detail.png)
 -  **Playlist Datail Page**입니다. 해당 플레이리스트의 수정 및 삭제가 가능합니다.
 -  해당 노래를 클릭하여 해당 단일 곡 재생 및 투표, 점수를 확인할 수 있습니다.
@@ -130,6 +258,14 @@
 -  **WatchParty Page**입니다. 해당 페이지는 사용자가 같이 공유 및 채팅을 진행하면서 영상 공유를 원할 경우 같이 보기 위한 페이지입니다.
 -  Supabase의 realtime기능을 이용하여 실시간으로 동기화 되도록 처리하였습니다. 
 -  영상은 유튜브의 영상이 기준이며 host가 영상을 재생한 후 sync버튼을 통해 시청자는 영상을 시청할 수 있습니다.
+
+<hr>
+
+### **Admon Page**
+![Admin Page](readme_img/admin.png)
+- **Admon Page**입니다. 해당 페이지는 Admin 유저가 데이터의 정기적 갱신 및 수정, 삭제와 같은 CRUD를 진행하기 위해 제작된 페이지입니다.
+- 데이터의 정제가 주 목적이기 때문에 간단한 디자인으로 구성되어 있습니다.
+- 영상 공유 또한 Admin 유저만 가능하며 재생 여부 및 삭제, host message의 동작이 가능합니다.
 
 <hr>
 
