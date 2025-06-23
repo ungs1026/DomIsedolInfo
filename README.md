@@ -21,6 +21,7 @@
     - [Board Page](#board-page)
     - [Playlist Page](#playlist-page)
     - [WatchParty Page](#watchparty-page)
+    - [Admin Page](#admin=page)
 - [**Contact**](#contact)
 
 <hr>
