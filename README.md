@@ -266,6 +266,34 @@ function initTopSlider() {
 - **Admon Page**입니다. 해당 페이지는 Admin 유저가 데이터의 정기적 갱신 및 수정, 삭제와 같은 CRUD를 진행하기 위해 제작된 페이지입니다.
 - 데이터의 정제가 주 목적이기 때문에 간단한 디자인으로 구성되어 있습니다.
 - 영상 공유 또한 Admin 유저만 가능하며 재생 여부 및 삭제, host message의 동작이 가능합니다.
+- 해당 페이지는 로그인을 통해 접근이 가능합니다.
+- 로그인 인증처리 : Supabase의 auth테이블을 이용해 인증처리가 진행됩니다.
+```
+/* ------ 인증 관련 메서드 ------ */
+async loginUser() {
+  if (!this.loginId || !this.loginPw) {
+    alert("아이디와 비밀번호를 모두 입력하세요.");
+    return;
+  }
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: this.loginId,
+      password: this.loginPw,
+    });
+  if (error) {
+    alert("로그인 실패: " + error.message);
+  } else {
+    console.log(
+      "로그인 성공. Access Token:",
+      data.session.access_token
+    );
+    this.userEmail = data.user.email;
+    this.isLoggedIn = true; // 로그인 상태로 설정
+    this.currentView = "list";
+    this.selectTable(this.tables[0]);
+  }
+}
+```
 
 <hr>
 
