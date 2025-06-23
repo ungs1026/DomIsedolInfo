@@ -14,6 +14,7 @@
     - [Distribution](#distribution)
 - [**Page**](#page)
     - [Fixed Element](#fixed-element)
+    - [Loading Page](#loading-page)
     - [Main Page](#main-page)
     - [Member Page](#member-page)
     - [Board Page](#board-page)
@@ -28,6 +29,7 @@
 - 해당 프로젝트는 인터넷 방송인 그룹 **이세계 아이돌**의 5월 24일 고척돔 공연 축하를 위해 제작되었습니다.
 - AI의 사용법 및 적응을 위해 80% 정도 AI를 이용하여 프로젝트를 진행하였으며 주로 GPT와 GROK을 이용하였습니다.
 - 해당 프로젝트는 **이세계 아이돌 멤버들의 정보**와 **오리지널 곡 및 커버곡**, 다같이 영상 시청을 위한 **WatchParty**기능이 구현되어 있습니다.
+- 태블릿 및 모바일 환경까지 생각하여 반응형 사이트로 제작하였습니다.
 
 ### **Features**
 - ServerLess로 개발되어 있으며 Database는 PostgreSQL을 사용하는 Supabase를 이용하였습니다.
@@ -35,16 +37,17 @@
 - 정보 페이지들은 정보 전달이 주 목적이기 때문에 다양한 interaction이 적용되어 있습니다.
 - Playlist페이지는 여러 음악 감상을 위한 기본 Playlist와 자유롭게 Customizing할 수 있도록 작업되어 있습니다.
 - WatchParty는 supabase의 realtime을 이용하여 실시간으로 채팅 및 host 여부를 파악할 수 있습니다.
+- vue3 문법을 이용하여 제작되어있습니다.
 
 ### **Techniques**
 - [**HTML5, CSS3, JavaScript**]
-- <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white"/> <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white"/> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black"/>
+* <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white"/> <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white"/> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black"/>
 - [**Vue.js (3버전)** ]
-- <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=Vue.js&logoColor=white"/>
+* <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=Vue.js&logoColor=white"/>
 - [**Supabase**]
-- ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+* ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 - [**Visual Studio Code**]
-- ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+* ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 
 ### **Distribution**
 - URL : <a href="http://isedolinfo.dothome.co.kr">이세계 아이돌</a>
@@ -64,6 +67,13 @@
 - Left : 재생 중인 곡의 기본 정보 [ 앨범커버, 제목, 가수 ]
 - Center : 음악 재생 조절을 위한 Progressbar 및 버튼
 - Right : 볼룸 조절을 위한 ProgressBar와 수치 표시
+
+<hr>
+
+### **Loading Page**
+![Loading Page](readme_img/loading.png)
+- **Loading Page**입니다. 해당 페이지는 페이지 접근 직후 출력되는 페이지 입니다.
+- ProgressBar를 통한 접속 대기 시간을 제공합니다.
 
 <hr>
 
