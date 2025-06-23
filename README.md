@@ -260,6 +260,62 @@ function initTopSlider() {
 -  Supabase의 realtime기능을 이용하여 실시간으로 동기화 되도록 처리하였습니다. 
 -  영상은 유튜브의 영상이 기준이며 host가 영상을 재생한 후 sync버튼을 통해 시청자는 영상을 시청할 수 있습니다.
 
+- Chatting의 기능은 Supabase의 realtime을 이용하였습니다.
+> 아래 코드는 realtime을 구독하여 WebSocket과 동일하게 양방향 통신으로 데이터를 수정 및 가져오는 방법입니다.
+```
+function subscribeToChat() {
+  if (chatSubscription) chatSubscription.unsubscribe(); // Unsubscribe from previous subscription
+  chatSubscription = supabase
+    .channel('chat-' + roomId)
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'comment_list', filter: `watchparty_room_idx=eq.${roomId}` },
+      (payload) => {
+        const c = payload.new;
+        const key = `${c.nickname}-${c.timeline}-${c.comment}`;
+        if (!shownComments.has(key)) {
+          shownComments.add(key);
+          const p = document.createElement('p');
+          if (c.nickname === "host") {
+            p.classList.add('host');
+            p.textContent = `[[ ${c.comment} ]]`; // 호스트 메시지 포맷 수정
+          } else {
+            p.textContent = `[${formatTime(c.timeline)}] ${c.nickname}: ${c.comment}`;
+          }
+          chatLog.appendChild(p);
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }
+      }
+    )
+    .subscribe();
+}
+```
+
+- Host가 재생하는 영상과 시청자가 보든 영상의 Sync는 다음과 같이 동작합니다.
+> Host가 admin페이지에서 영상을 재생 및 조작합니다. 이를 DB에 저장합니다. <br>
+> 시청자의 경우 재생 여부 및 재생 타임라인을 DB에서 가져와 처음 접속 시 Sync버튼을 통해 영상 재생을 시작합니다. <br>
+> 이는 2초마다 DB의 저장된 TimeLine과 영상의 TimeLine을 비교하여 2초 이상 차이가 날 때 자동으로 수정합니다. <br>
+```
+function startSyncPolling() {
+  if (syncCount < 1) return;
+  if (syncInterval) clearInterval(syncInterval);
+  syncInterval = setInterval(async () => {
+    const { data } = await supabase.from('sync').select('timeline, play').eq('watchparty_room_idx', roomId).single();
+    if (player && typeof player.getCurrentTime === 'function' && data) {
+      const current = player.getCurrentTime();
+      if (Math.abs(current - data.timeline) > 2 || !data.play) {
+        player.seekTo(data.timeline, true);
+        if (data.play) {
+          player.playVideo();
+        } else {
+          player.pauseVideo();
+        }
+      }
+    }
+  }, 2000);
+}
+```
+
 <hr>
 
 ### **Admon Page**
