@@ -1,4 +1,4 @@
-# **ISEGYE IDOL Info <수정중>**
+# **ISEGYE IDOL Info**
 <!--프로젝트 메인 이미지-->
 ![Project Title](readme_img/members.png)
 
