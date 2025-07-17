@@ -318,7 +318,7 @@ function startSyncPolling() {
 
 <hr>
 
-### **Admon Page**
+### **Admin Page**
 ![Admin Page](readme_img/admin.png)
 - **Admon Page**입니다. 해당 페이지는 Admin 유저가 데이터의 정기적 갱신 및 수정, 삭제와 같은 CRUD를 진행하기 위해 제작된 페이지입니다.
 - 데이터의 정제가 주 목적이기 때문에 간단한 디자인으로 구성되어 있습니다.
