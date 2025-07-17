@@ -320,7 +320,7 @@ function startSyncPolling() {
 
 ### **Admin Page**
 ![Admin Page](readme_img/admin.png)
-- **Admon Page**입니다. 해당 페이지는 Admin 유저가 데이터의 정기적 갱신 및 수정, 삭제와 같은 CRUD를 진행하기 위해 제작된 페이지입니다.
+- **Admin Page**입니다. 해당 페이지는 Admin 유저가 데이터의 정기적 갱신 및 수정, 삭제와 같은 CRUD를 진행하기 위해 제작된 페이지입니다.
 - 데이터의 정제가 주 목적이기 때문에 간단한 디자인으로 구성되어 있습니다.
 - 영상 공유 또한 Admin 유저만 가능하며 재생 여부 및 삭제, host message의 동작이 가능합니다.
 - 해당 페이지는 로그인을 통해 접근이 가능합니다.
