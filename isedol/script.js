@@ -107,6 +107,8 @@ const app = createApp({
     const memberInfo = ref("");
     const memberColor = ref("");
     const isSongTitlesVisible = ref(false);
+
+
     const isFooterVisible = ref(false);
     const showDetail = ref(false);
     // 데이터 정의
@@ -117,7 +119,7 @@ const app = createApp({
         img2: "source/profiles/ine/ine_face.png",
         img3: "source/profiles/ine/ine_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">아이네(INE)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">아이네(INE)</h3>
                       <span>나이 : 31살</span><br>
                       <span>158cm｜B형</span><br>
                       <span>상징색 : 파란제비꽃색 #8A2BE2</span><br>
@@ -132,7 +134,7 @@ const app = createApp({
         img2: "source/profiles/jingburger/jing_face.png",
         img3: "source/profiles/jingburger/jing_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">징버거(JINGBURGER)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">징버거(JINGBURGER)</h3>
                       <span>나이 : 1995년 10월 8일 (29세)</span><br>
                       <span>161.9cm｜B형</span><br>
                       <span>상징색 : 노란색 빨간색</span><br>
@@ -147,7 +149,7 @@ const app = createApp({
         img2: "source/profiles/lilpa/lil_face.png",
         img3: "source/profiles/lilpa/lil_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">릴파(LILPA)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">릴파(LILPA)</h3>
                       <span>나이 : 1996년 3월 9일 (29세)</span><br>
                       <span>164cm｜O형</span><br>
                       <span>상징색 : 남색</span><br>
@@ -162,7 +164,7 @@ const app = createApp({
         img2: "source/profiles/jururu/ju_face.png",
         img3: "source/profiles/jururu/ju_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">주르르(JURURU)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">주르르(JURURU)</h3>
                       <span>나이 : 1997년 6월 10일 (27세)</span><br>
                       <span>162.3cm[3]｜O형｜225mm</span><br>
                       <span>상징색 : 분홍색</span><br>
@@ -177,7 +179,7 @@ const app = createApp({
         img2: "source/profiles/gosegu/go_face.png",
         img3: "source/profiles/gosegu/go_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">고세구(GOSEGU)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">고세구(GOSEGU)</h3>
                       <span>나이 : 1998년 (26~27세)</span><br>
                       <span>300m[3]｜B형</span><br>
                       <span>상징색 : 하늘색</span><br>
@@ -192,7 +194,7 @@ const app = createApp({
         img2: "source/profiles/viichan/vi_face.png",
         img3: "source/profiles/viichan/vi_fan.png",
         info: `<div class="mem_detail_right_info">
-                      <h3 style="margin-bottom: 1rem;">비챤(VIICHAN)</h3>
+                      <h3 style="margin-bottom: 0.4rem;">비챤(VIICHAN)</h3>
                       <span>나이 : 2000년 1월 16일(25세)</span><br>
                       <span>161cm｜B형</span><br>
                       <span>상징색 : 스프링버드 / 진회색 / 코토리 베이지</span><br>
@@ -203,20 +205,10 @@ const app = createApp({
       },
     ]);
     const songs = ref([
-      { title: "이세계 아이돌 - Stargazers", img: "source/stargazers.png" },
-      {
-        title: `<a href="https://www.youtube.com/watch?v=MCyL9k_Tiok" target="_blank" style="color: white;">YOUTUBE</a>`,
-        img: "source/profiles/sns/youtube.svg",
-      },
-      {
-        title: `<a href="https://cafe.naver.com/steamindiegame?iframe_url=/ArticleList.nhn%3Fsearch.clubid=27842958%26search.menuid=345%26search.boardtype=L" target="_blank" style="color: white;">네이버 카페</a>`,
-        img: "source/profiles/sns/naver_cafe.svg",
-      },
-      {
-        title: `<a href="https://namu.wiki/w/Stargazers(%EC%9D%B4%EC%84%B8%EA%B3%84%EC%95%84%EC%9D%B4%EB%8F%8C)" target="_blank" style="color: white;">[가사 일부]</a>
-              살며시 옮겨오는 그대 거리 틈에 닿는 숨 꿈일지도 몰라 난 알고 싶어 눈동자에 비치는 모습 누구보다 짙은 you 이젠 멀어질 수 없어 내 맘 속의 truth`,
-        img: "source/stargazers.png",
-      },
+      { title: "Be My Light", img: "source/BeMyLight.jpg", url: "https://www.youtube.com/watch?v=3cEUPoPXz7E" },
+      { title: "Waktaburse", img: "source/wak.jpg", url: "https://www.youtube.com/@waktaverse" },
+      { title: "Youtube", img: "source/isedol.jpg", url: "https://www.youtube.com/channel/UCmblbE_WxTaFWcMEGFJ_97w" },
+      { title: "Naver Cafe", img: "source/profiles/sns/naver_cafe.svg", url: "https://cafe.naver.com/f-e/cafes/27842958/articles/21052194?boardtype=L&menuid=679&referrerAllArticles=false" },
     ]);
     const videoCards = ref([]);
     const awardCards = ref([
@@ -237,7 +229,7 @@ const app = createApp({
     // 함수================================
     // Main 페이지 초기화 (Swiper, Song Icons, Member Icon, Video, Footer, Playbar)
     const initMainPage = async () => {
-      initSongIcons();
+
       initVideo();
       initFooterAnimation();
       initPlaybar();
@@ -248,14 +240,7 @@ const app = createApp({
       ]);
     };
 
-    // Song Icons 초기화
-    const initSongIcons = () => {
-      const songIcons = document.getElementById("song-icons");
-      if (songIcons) {
-        songIcons.addEventListener("mouseenter", showSongTitles);
-        songIcons.addEventListener("mouseleave", hideSongTitles);
-      }
-    };
+
     // 수정된 Video 초기화 (Vue 환경에서 nextTick 후 DOM 접근)
     const initVideo = () => {
       nextTick(() => {
@@ -290,7 +275,7 @@ const app = createApp({
 
         function setVideoCardPositions() {
           const containerWidth = videoContainer.clientWidth;
-          const cardSize = 260;
+          const cardSize = 200;
           const rowTops = [50, 220, 450];
           const rows = { 0: [], 1: [], 2: [] };
           videoCardNodes.forEach((card, idx) => rows[idx % 3].push(card));
@@ -321,25 +306,35 @@ const app = createApp({
           });
         }
 
-        if (isMobile()) resetGridStyles();
-        else {
+        if (isMobile()) {
+          resetGridStyles();
+        } else {
           setVideoCardPositions();
-          const onScroll = () => {
-            const videoRect = videoContainer.getBoundingClientRect();
-            if (
-              videoRect.top <
-              window.innerHeight - videoContainer.clientHeight / 5
-            ) {
-              videoCardNodes.forEach((card) => {
-                if (!card.classList.contains("animate")) {
-                  card.classList.add("animate");
-                  setTimeout(() => card.classList.add("float-animation"), 500);
-                }
-              });
-              window.removeEventListener("scroll", onScroll);
-            }
-          };
-          window.addEventListener("scroll", onScroll);
+          if (window.innerWidth >= 1200) {
+            // WIDE screens: Make cards visible immediately
+            videoCardNodes.forEach((card) => {
+              card.classList.add("animate");
+              setTimeout(() => card.classList.add("float-animation"), 500);
+            });
+          } else {
+            // NARROW screens: Use scroll animation
+            const onScroll = () => {
+              const videoRect = videoContainer.getBoundingClientRect();
+              if (
+                videoRect.top <
+                window.innerHeight - videoContainer.clientHeight / 5
+              ) {
+                videoCardNodes.forEach((card) => {
+                  if (!card.classList.contains("animate")) {
+                    card.classList.add("animate");
+                    setTimeout(() => card.classList.add("float-animation"), 500);
+                  }
+                });
+                window.removeEventListener("scroll", onScroll);
+              }
+            };
+            window.addEventListener("scroll", onScroll);
+          }
         }
 
         videoCardNodes.forEach((card) => {
@@ -444,9 +439,9 @@ const app = createApp({
             loop: sliders.value.length > 1, // 슬라이드가 1개 이상일 때만 루프 활성화
             slidesPerView: 1,
             slidesPerGroup: 1,
-            navigation: {
-              nextEl: ".swiper-button-next",
-              prevEl: ".swiper-button-prev",
+            pagination: {
+              el: ".swiper-pagination",
+              clickable: true,
             },
           });
         });
@@ -475,6 +470,8 @@ const app = createApp({
     const hideSongTitles = () => {
       isSongTitlesVisible.value = false;
     };
+
+
 
     // Member Detail 기능
     const showMemberDetail = (index) => {
@@ -599,12 +596,12 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/aaqIHn61OVE?si=okZUUJlywxhL1Ah3" 
                     title="YouTube video player" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 오디션 때부터 팬들은 물론이고, 합격 후 이세돌 멤버들도 입을 모아 릴파와 함께 메인보컬로 꼽을 정도로 노래 실력이 뛰어나다. 그룹 내에서 공식 포지션은 정해지지 않았지만 보통 노래 후렴구와 같은 하이라이트 파트와 화음, 코러스를 담당하는 등 비공식적으로도 그 역할을 하는 편.</span><br>
                     <span>- 허스키한 톤에 풍부한 성량과 넓은 음역대를 지니고 있으며, 특히 감정을 연기하는 데 있어 특출난 기교를 갖춘 훌륭한 보컬의 소유자이다. 소화할 수 있는 장르의 영역도 그만큼 넓다</span><br>
@@ -724,9 +721,9 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/8MImc3MxYZg?si=eru7EusfDDG4QktU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- TOMBOY나 LOVE DIVE와 같은 K-POP 장르는 물론이고 STAY, 별빛 등대의 섬, 강풍 올백 등 여러 장르의 곡을 커버했다.</span><br>
                     <span>- 목소리의 스타일을 바꿀 수 있어 이세계아이돌 보컬의 또 다른 코어 역할을 담당한다. 멤버들 저마다의 음색에 개성이 강한 팀이기에 연결고리 역할을 수행할 다재다능한 보컬이 필요한데, 징버거가 파트에 맞게 톤을 바꿔가며 이 역할을 수행한다.</span><br>
@@ -833,17 +830,17 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/SPyUgq5ukNE?si=NwcsbHqiqHvlm5cz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 이세계아이돌 활동 초기부터 멤버들이나 팬들 사이에서 아이네와 함께 메인보컬로 거론될 만큼 실력이 좋다. 물론 각 멤버마다 공식적으로 정해진 포지션은 없지만 대체로 후렴, 클라이맥스 고음 파트와 같은 하이라이트나 애드립과 코러스를 맡는 등 중추적인 역할을 하는 편. 기본기가 좋으며 단단한 성대와 발성, 매우 넓은 음역대[35], 큰 성량을 소화하는 고유의 창법 등 특색있는 매력을 가지고 있어 다양한 장르에서 본인만의 색을 드러내는 것이 가능한 보컬이다.</span><br>
                     <span>- 실제 아이돌 그룹 메인보컬로 활동한 경력이 있고 재즈 보컬을 전공으로 배우기도 하였다. 팬들 사이에서 굉장히 높은 음까지도 시원하게 올라가는 고음역대에 대한 인상이 깊은 데다, 릴파 본인도 락밴드 장르를 좋아하여 상대적으로 드러나지 않은 감이 있으나 LADY 커버를 통해 부드러운 중저음을, KIDDING의 랩 파트를 맡아 인상적인 저음을 보여주는 등 다른 음역대 보컬로서도 실력이 뛰어나며 이러한 파트를 맡는 일도 많다.</span><br>
                     <span>- 성량이 매우 커 고음에서 꽉 차는 목소리를 들려준다. 평소 대화를 할 때의 목소리도 그만큼 큰 편이다.</span>
                   </div>
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/SLa8fe1Z2XE?si=GcF5qxBpfnEUjvc0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 팬들 사이에서 메인댄서로 자주 거론된다. 이세돌 활동에서도 드러나는 능력으로 RE : WIND 뮤직 비디오나 LOVE DIVE 커버 영상에 쓰인 안무를 모션 캡처를 활용해 다른 멤버들의 몫까지 6인분을 혼자 전부 촬영했으며, 이 모션을 다른 멤버들의 아바타에 덮어쓰기 하는 방식으로 제작되었다.</span><br>
                     <span>- 아이돌 활동 경력이 있어 이세돌 멤버들 중 유일하게 전문적으로 댄스를 배운 멤버이기 때문에 아이솔레이션 등의 다소 기술적인 동작이나 쉽사리 시도하기 어려운 격한 움직임 등이 포함되는 안무도 디테일하고 안정적으로 소화할 수 있으며, 그만큼 춤에 대한 이해력도 높아 KIDDING의 안무와 그 동작을 다른 멤버들에게 직접 설명하며 가르쳐주기도 했다. 또한 필요에 따라 안무 중 일부를 촬영장에서 즉석으로 만들거나 수정할 수도 있고 군무의 동선 역시 스스로 짜는 것이 가능해 이런 점이 활동에 적지 않은 영향을 주었다.</span><br>
@@ -960,9 +957,9 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/oRg-7iku6Ok?si=FYZp0mu-ywLzgQ_f" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 높은 톤과 밝은 음색의 목소리를 지닌 보컬로, 이런 점으로 하여금 K-POP 노래와 같은 장르에 자연스럽게 녹아드면서도 자신만의 특색을 보일 수 있는 가창이 가능하다.</span><br>
                     <span>- 특색 있는 목소리를 활용해 팀에서는 곡의 포인트가 될 만한 부분을 주로 담당한다. 감탄사, 나레이션 등 다양한 영역에서 귀에 콕 박히는 부분을 맛깔스럽게 소화한다.</span><br>
@@ -1075,15 +1072,15 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/5qUwMpUWNLQ?si=noiSnZFHuZ1BQkxZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 맑고 청아한 음색이 특징인 보컬 스타일을 가지고 있으며, 밝고 활기찬 곡부터 중저음이 돋보이는 잔잔한 곡에 이르기까지 다양한 노래를 선보이고 있다.<br> 특유의 음색이 맑고 깨끗해서 듣기 편안하다고 좋아하는 팬들이 많으며, 데뷔곡 RE : WIND에서 가이드 보컬을 담당하였다.</span><br>
                   </div>
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/de1OdGUVRys?si=jxzkvsNeII78hAsS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 또한 성우처럼 노래하는 것에 능한 편으로 호쇼 마린의 Ahoy, 시구레 우이의 로리신 레퀴엠 같은 전파곡과 여러가지 동요도 잘 소화한다.</span><br>
                     <span>- 빠른 노래를 부를 때도 가사가 정확히 들릴 정도로 발음이 정확하다. 농담 반 진담 반으로 이세계아이돌의 랩 담당 멤버로 불리기도 한다</span><br>
@@ -1201,9 +1198,9 @@ const app = createApp({
                 </div>
 
                 <div class="vocal">
-                  <div class="ex">
+                  <!-- <div class="ex">
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/--Go33WYnqw?si=T-O6G0pNADpFGX2a" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                  </div>
+                  </div> -->
                   <div class="text">
                     <span>- 음색이 굉장히 독특하고 매력적이며 창법의 개성이 강한 보컬이다. 본격적인 노래 공부를 일본 노래로 한 티가 조금 나는데, 고음부에서 허스키하면서도 얇고 예쁜 톤을 유지하면서도 힘이 잘 붙는 편이다. 첫 음을 잡고 들어갈 때나 끝을 마무리할 때 특유의 스타일이 있으며 거슬린다는 느낌 없이 꽤 부드럽게 이어진다. 주로 드러나는 점은 끝 음의 모음을 'ㅣ'로 점점 변화시키는 것인데, 이는 볼빨간사춘기, 10cm의 노래에서 쉽게 들을 수 있는 발음이다.[27] 팬덤인 라니들 사이에선 비챤의 독특한 음색과 창법이 가장 큰 인기 요소로 꼽히는 편이다.</span><br>
                     <span>- 노래를 시작하면서 본인이 부른 노래를 녹음해서 계속 들어가며 연습했는데, 어느 순간 "내 목소리는 이런 소리를 내는 악기구나." 하고 깨달음을 얻은 뒤로 실력이 많이 올랐다고 한다.</span><br>
@@ -1546,6 +1543,7 @@ const app = createApp({
     const selectedScore = ref(null);
     const otherSongs = ref([]);
     let topSliderInitialized = false;
+    let topSliderAnimationId = null;
     // 함수================================
     // Playlist 페이지 기능
     const refreshPlaylistAll = async () => {
@@ -1570,13 +1568,18 @@ const app = createApp({
 
     // 슬라이더 초기화 (member slider와 유사하게)
     function initTopSlider() {
+      if (topSliderAnimationId) {
+        cancelAnimationFrame(topSliderAnimationId);
+      }
+
       nextTick(() => {
         const cards = topCards.value;
-        if (!cards.length === 0) return;
+        if (cards.length === 0) return;
+
         const cardWidth = cards[0].offsetWidth + 10;
         cards.forEach((el, i) => {
           topPositions.value[i] = i * cardWidth;
-          el.style.position = 'absolute';
+          el.style.position = "absolute";
           el.style.transform = `translateX(${topPositions.value[i]}px)`;
         });
 
@@ -1586,13 +1589,16 @@ const app = createApp({
           if (!isTopPaused.value) {
             for (let i = 0; i < cards.length; i++) {
               topPositions.value[i] -= topSpeed;
-              if (topPositions.value[i] <= -cardWidth * (cards.length/2)) {
-                topPositions.value[i] += cardWidth * (cards.length/2) + window.innerWidth + additionalOffsetFactor;
+              if (topPositions.value[i] <= -cardWidth * (cards.length / 2)) {
+                topPositions.value[i] +=
+                  cardWidth * (cards.length / 2) +
+                  window.innerWidth +
+                  additionalOffsetFactor;
               }
               cards[i].style.transform = `translateX(${topPositions.value[i]}px)`;
             }
           }
-          requestAnimationFrame(animate);
+          topSliderAnimationId = requestAnimationFrame(animate);
         }
         animate();
       });
@@ -1606,9 +1612,17 @@ const app = createApp({
     function playTopSong(song) {
       currentPlaylist.value = { songs: [song] };
       currentSongIndex.value = 0;
-      playbarPlaylist.value = [ song.mp3file ];
+      playbarPlaylist.value = [song.mp3file];
       repeatMode.value = true;
       playCurrentSong();
+
+      // 슬라이더를 일시정지합니다.
+      pauseTopSlider();
+
+      // 3초 후에 슬라이더를 다시 시작합니다.
+      setTimeout(() => {
+        resumeTopSlider();
+      }, 3000);
     }
 
     

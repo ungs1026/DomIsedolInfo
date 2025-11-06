@@ -129,136 +129,116 @@
                   <img :src="slider.img" alt="배너 사진 없음" />
                 </div>
               </div>
-              <div class="swiper-button-next"></div>
-              <div class="swiper-button-prev"></div>
               <div class="swiper-pagination"></div>
             </div>
           </section>
-          <section id="member">
-            <div id="main-member">
-              <div class="member-icons"id="member-icons" :class="{ fold: showDetail }">
-                <div
-                  class="member-icon"
-                  v-for="member in members"
-                  :key="member.index"
-                  :data-index="member.index"
-                  :data-img1="member.img1"
-                  :data-img2="member.img2"
-                  :data-img3="member.img3"
-                  :data-info="member.info"
-                  @click="showMemberDetail(member.index)"
-                >
-                  <img
-                    :src="'source/profiles/' + member.index + '.png'"
-                    alt="Member Icon"
-                  />
-                </div>
-              </div>
-
-              <div class="member-detail" id="member-detail" :class="{ active: showDetail }" :style="{ backgroundColor: memberColor }" style="color: white;">
-                <button class="detail-close" @click="hideMemberDetail">
-                  X
-                </button>
-                <div class="member-detail-content">
-                  <div class="detail-left">
-                    <img
-                      v-for="img in memberImages"
-                      :key="img"
-                      :src="img"
-                      class="detail-photo"
-                      alt="Member Image"
-                    />
-                  </div>
-                  <div class="detail-right" v-html="memberInfo"></div>
-                </div>
-              </div>
-
-
-            </div>
-          </section>
-          <section id="latest_song">
-            <div class="latest-song-wrapper">
-              <div
-                class="album-art-container"
-                @mouseenter="showSongTitles"
-                @mouseleave="hideSongTitles"
-              >
-                <img class="card card1" src="source/stargazers.jpg" alt="Latest Song Cover"/>
-                <div class="card card2">
-                  <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube.com/embed/MCyL9k_Tiok?si=aosUIREa5M8sQmxM"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              </div>
-              <div class="song-icons" id="song-icons" :class="{ vertical: isSongTitlesVisible }">
-                <div class="icon-item" v-for="(song, index) in songs" :key="index">
-                  <!-- 아이콘 이미지를 출력 -->
-                  <img class="icon" :src="song.img" alt="Song Icon" style="object-fit: contain;" />
-                  <!-- 모든 노래의 제목을 출력하며, 마지막(4번째) 항목은 긴 제목의 경우 truncation(ellipsis) 처리 -->
-                  <p>
-                    <span
-                      v-show="isSongTitlesVisible"
-                      :class="'truncate'"
-                      v-html="song.title"
-                    ></span>
-                  </p>
-                </div>
-              </div>
-              
-            </div>
-          </section>
-          <!-- VIDEO 섹션: Vue 환경에 맞게 initVideo가 nextTick 후 호출되어 등록됨 -->
-          <section id="video">
-            <div class="container">
-              <div class="video-container" id="video-container">
-                <p><span>매일 20:00에 갱신됩니다.</span></p> <p></p>
-                <div
-                  class="video-card"
-                  v-for="(card, index) in videoCards"
-                  :key="index"
-                  :class="{ animate: card.animate, 'float-animation': card.float, active: card.active, hidden: card.hidden }"
-                  @click="onVideoCardClick(index)"
-                >
-                  <!-- 클릭 전: 기본 프로필 이미지 출력 -->
-                  <template v-if="!card.showVideo">
-                    <img
-                      :src="card.defaultImg"
-                      alt="Member Icon"
-                    />
-                  </template>
-
-                  <!-- 클릭 후: 영상 출력 (iframe) -->
-                  <template v-else>
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      :src="card.youtubeUrl"
-                      title="YouTube video player"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowfullscreen
+          <div class="main-layout-container">
+            <div class="main-left-column">
+              <h3>MEMBER</h3>
+              <section id="member">
+                <div id="main-member">
+                  <div class="member-icons"id="member-icons">
+                    <div
+                      class="member-icon"
+                      v-for="member in members"
+                      :key="member.index"
+                      :data-index="member.index"
+                      :data-img1="member.img1"
+                      :data-img2="member.img2"
+                      :data-img3="member.img3"
+                      :data-info="member.info"
+                      @click="showMemberDetail(member.index)"
                     >
-                    </iframe>
-                  </template>
+                      <img
+                        :src="'source/profiles/' + member.index + '.png'"
+                        alt="Member Icon"
+                      />
+                    </div>
+                  </div>
+    
+                      
+    
                 </div>
-                <button
-                  class="close-btn"
-                  id="video-close-btn"
-                  @click="onCloseVideoCard"
-                  :class="{ show: activeVideoCard !== null }"
-                >
-                  X
-                </button>
-              </div>
+              </section>
+              <h3>LATEST SONG</h3>
+              <section id="latest_song">
+                <div class="latest-song-wrapper">
+                  <div
+                    class="album-art-container"
+                    @mouseenter="showSongTitles"
+                    @mouseleave="hideSongTitles"
+                  >
+                    <img class="card card1" src="source/BeMyLight.jpg" alt="Latest Song Cover"/>
+                    <div class="card card2">
+                      <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube.com/embed/3cEUPoPXz7E?si=hkWLEWFV1o_a8n9P"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                      ></iframe>
+                    </div>
+                  </div>
+                  <div class="song-icons" id="song-icons">
+                    <a v-for="(song, index) in songs" :key="index" :href="song.url" target="_blank" class="icon-item">
+                      <img class="icon" :src="song.img" alt="Song Icon" style="object-fit: contain;" />
+                    </a>
+                  </div>
+                  
+                </div>
+              </section>
             </div>
-          </section>
+            <div class="main-right-column">
+              <!-- VIDEO 섹션: Vue 환경에 맞게 initVideo가 nextTick 후 호출되어 등록됨 -->
+              <section id="video">
+                <div class="container">
+                  <div class="video-container" id="video-container">
+                    <p><span>매일 20:00에 갱신됩니다.</span></p> <p></p>
+                    <div
+                      class="video-card"
+                      v-for="(card, index) in videoCards"
+                      :key="index"
+                      :class="{ animate: card.animate, 'float-animation': card.float, active: card.active, hidden: card.hidden }"
+                      @click="onVideoCardClick(index)"
+                    >
+                      <!-- 클릭 전: 기본 프로필 이미지 출력 -->
+                      <template v-if="!card.showVideo">
+                        <img
+                          :src="card.defaultImg"
+                          alt="Member Icon"
+                        />
+                      </template>
+    
+                      <!-- 클릭 후: 영상 출력 (iframe) -->
+                      <template v-else>
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          :src="card.youtubeUrl"
+                          title="YouTube video player"
+                          frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowfullscreen
+                        >
+                        </iframe>
+                      </template>
+                    </div>
+                    <button
+                      class="close-btn"
+                      id="video-close-btn"
+                      @click="onCloseVideoCard"
+                      :class="{ show: activeVideoCard !== null }"
+                    >
+                      X
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
 
           <section id="award">
             <div class="container">
@@ -749,6 +729,31 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Member Detail Modal -->
+      <div id="member-detail-modal" class="member-modal" :class="{ active: showDetail }">
+        <div class="member-modal-content" :style="{ backgroundColor: memberColor }">
+            <div class="member-detail" id="member-detail" style="color: white;">
+                <button class="detail-close" @click="hideMemberDetail">
+                  X
+                </button>
+                <div class="member-detail-content">
+                  <div class="detail-left">
+                    <div class="member-img-container">
+                      <img
+                        v-for="img in memberImages"
+                        :key="img"
+                        :src="img"
+                        class="detail-photo"
+                        alt="Member Image"
+                      />
+                    </div>
+                  </div>
+                  <div class="detail-right" v-html="memberInfo"></div>
+                </div>
+            </div>
         </div>
       </div>
 
